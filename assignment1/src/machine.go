@@ -52,6 +52,67 @@ func pin(in0 chan int, in1 chan int, out0 chan int, out1 chan int) {
 	close(out1)
 }
 
+func oscilator(in chan int, outs [](chan int)) {
+	delta := 0.1
+	min := 0
+	max := 0.5
+	val := 0
+	sign := 1
+	for {
+		if val == max {
+			sign = -1
+		}
+		if val == min {
+			sign = 1
+		}
+		val += sign * delta
+		_, c := <-in
+
+		if c {
+			for _, ch := range outs {
+				if c {
+					ch <- val
+				} else {
+					close(ch)
+				}
+			}
+		}
+	}
+}
+
+func pinOsc(in0 chan int, in1 chan int, out0 chan int, out1 chan int, osc chan int) {
+	var choice int
+	for in0 != nil || in1 != nil {
+		choice = rand.Intn(2)
+		select {
+		case _, c0 := <-in0:
+			if !c0 {
+				in0 = nil
+			} else {
+				if choice == 0 {
+					out0 <- 1
+				} else {
+					out1 <- 1
+				}
+			}
+		case _, c1 := <-in1:
+			if !c1 {
+				in1 = nil
+			} else {
+				if choice == 0 {
+					out0 <- 1
+				} else {
+					out1 <- 1
+				}
+			}
+		}
+	}
+	if out0 != out1 {
+		close(out0)
+	}
+	close(out1)
+}
+
 func bin(in0 chan int, in1 chan int, n int, message chan binMsg) {
 	var balls int = 0
 	for in0 != nil || in1 != nil {
@@ -128,6 +189,7 @@ func main() {
 		msg := <-messages
 		msgList[msg.idx] = msg.balls
 	}
+	fmt.Println("Fixed Two-Layer Machine:")
 	for i, b := range msgList {
 		fmt.Println("Bin:", i, "Balls:", b)
 	}

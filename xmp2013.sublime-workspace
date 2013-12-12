@@ -3,6 +3,10 @@
 	{
 		"selected_items":
 		[
+			[
+				"pr",
+				"Println	n int, err error ƒ"
+			]
 		]
 	},
 	"buffers":
@@ -11,7 +15,7 @@
 			"file": "assignment1/src/machine.go",
 			"settings":
 			{
-				"buffer_size": 2917,
+				"buffer_size": 3791,
 				"line_ending": "Unix"
 			}
 		}
@@ -51,10 +55,12 @@
 	},
 	"file_history":
 	[
+		"/home/jens/repos/configz/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/GoSublime.sublime-settings"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 36.0
 	},
 	"find_in_files":
 	{
@@ -68,6 +74,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"tab"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -94,24 +101,24 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2917,
+						"buffer_size": 3791,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								392,
-								392
+								1355,
+								1355
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1075.0,
+						"translation.y": 774.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
