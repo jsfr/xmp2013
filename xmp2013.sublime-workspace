@@ -15,8 +15,25 @@
 			"file": "assignment1/src/machine.go",
 			"settings":
 			{
-				"buffer_size": 3791,
+				"buffer_size": 2032,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assignment1/src/main.go",
+			"settings":
+			{
+				"buffer_size": 877,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assignment1/src/machineOsc.go",
+			"settings":
+			{
+				"buffer_size": 492,
+				"line_ending": "Unix",
+				"name": "package \"machine\""
 			}
 		}
 	],
@@ -92,7 +109,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -101,15 +118,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3791,
+						"buffer_size": 2032,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1355,
-								1355
+								584,
+								584
 							]
 						],
 						"settings":
@@ -118,7 +135,65 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 774.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "assignment1/src/main.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 877,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								80,
+								80
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "assignment1/src/machineOsc.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 492,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								492,
+								492
+							]
+						],
+						"settings":
+						{
+							"auto_name": "package \"machine\"",
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -160,6 +235,10 @@
 	"output.9o:///home/jens/Repos/xmp2013/assignment1/src":
 	{
 		"height": 281.0
+	},
+	"output.9o:///home/jens/repos/xmp2013/assignment1/src":
+	{
+		"height": 180.0
 	},
 	"project": "xmp2013.sublime-project",
 	"replace":
