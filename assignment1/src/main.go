@@ -41,4 +41,16 @@ func main() {
 	}
 
 	// Problem 3: Oscilator
+	layers = 10
+	msgList = make([]int, layers+1)
+	go nLayerMachineOsc(balls, layers, 0.0, 0.5, 0.1, messages)
+	for i := 0; i < layers+1; i++ {
+		msg := <-messages
+		msgList[msg.idx] = msg.balls
+	}
+	fmt.Println(layers, "Layer Machine, Oscillating:")
+	for i, b := range msgList {
+		fmt.Println("Bin:", i, " Balls:", b)
+	}
+
 }
