@@ -4,8 +4,8 @@
 		"selected_items":
 		[
 			[
-				"F",
-				"Float64	float64 ƒ"
+				"time",
+				"times	latex-mathsymbols"
 			],
 			[
 				"pr",
@@ -16,18 +16,10 @@
 	"buffers":
 	[
 		{
-			"file": "assignment1/src/machine.go",
+			"file": "assignment1/report/report.tex",
 			"settings":
 			{
-				"buffer_size": 3984,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "assignment1/src/main.go",
-			"settings":
-			{
-				"buffer_size": 1195,
+				"buffer_size": 7541,
 				"line_ending": "Unix"
 			}
 		}
@@ -38,10 +30,6 @@
 		"height": 375.0,
 		"selected_items":
 		[
-			[
-				"gos",
-				"GoSublime: Goto Definition"
-			],
 			[
 				"gosub",
 				"GoSublime: Fmt and save"
@@ -71,11 +59,9 @@
 	},
 	"file_history":
 	[
-		"/home/jens/repos/xmp2013/assignment1/report/report.tex",
-		"/home/jens/repos/xmp2013/assignment1/src/machine.go",
+		"/home/jens/repos/configz/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
 		"/home/jens/repos/xmp2013/assignment1/src/main.go",
-		"/home/jens/repos/pcsd2013/assignment3/report/fredskov_bendt_lindsgaard_report3.tex",
-		"/usr/lib/go/src/pkg/math/rand/rand.go",
+		"/home/jens/repos/xmp2013/assignment1/src/machine.go",
 		"/home/jens/repos/xmp2013/assignment1/src/machineOsc.go",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/GoSublime.sublime-settings"
@@ -96,7 +82,6 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"osc",
 			"tab"
 		],
 		"highlight": true,
@@ -120,56 +105,27 @@
 			[
 				{
 					"buffer": 0,
-					"file": "assignment1/src/machine.go",
+					"file": "assignment1/report/report.tex",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3984,
+						"buffer_size": 7541,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2804,
-								2804
+								6820,
+								6820
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "assignment1/src/main.go",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1195,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								965,
-								965
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2188.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -179,7 +135,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 0.0
 	},
 	"input":
 	{
@@ -216,6 +172,10 @@
 	{
 		"height": 180.0
 	},
+	"output.GoSublime-main-output":
+	{
+		"height": 96.0
+	},
 	"output.exec":
 	{
 		"height": 96.0
@@ -223,7 +183,7 @@
 	"project": "xmp2013.sublime-project",
 	"replace":
 	{
-		"height": 40.0
+		"height": 0.0
 	},
 	"save_all_on_build": true,
 	"select_file":

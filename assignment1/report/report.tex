@@ -49,9 +49,158 @@
 
 \section{} % (fold)
 
+\paragraph{a.} % (fold)
+\label{par:a_}
+
+The alphabet of the resulting process is $\alpha Sa = \{coin, pepsi, sprite, think\}$.
+\begin{align*}
+Sa &= VM || RICH \\
+   &= (coin \rightarrow (pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM)) \\
+   &\phantom{=} || (coin \rightarrow think \rightarrow RICH) \\
+   &= coin \rightarrow ((pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM)) \\
+   &\phantom{=} || (think \rightarrow RICH)) & [2.3.1\;L4A] \\
+   &= coin \rightarrow ((pepsi \rightarrow (VM || think \rightarrow RICH)) \\
+   &\phantom{=} | (think \rightarrow ((pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM) || RICH))) & [2.3.1\;L7] \\
+\end{align*}
+
+We then look at
+\begin{align*}
+VM || think \rightarrow RICH &= think \rightarrow (VM || RICH) & [2.3.1\;L5B]\\
+                             &=  think \rightarrow Sa
+\end{align*}
+
+We then look at
+\begin{align*}
+&(pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM) || RICH \\
+= &\phantom{(} pepsi \rightarrow Sa | coin \rightarrow ((sprite \rightarrow VM) || (think \rightarrow RICH)) & [2.3.1\;L7] \\
+= &\phantom{(} pepsi \rightarrow Sa | coin \rightarrow (sprite \rightarrow think \rightarrow Sa | think \rightarrow sprite \rightarrow Sa) & [2.3.1\;L7]
+\end{align*}
+
+Which gives us the final result
+\begin{align*}
+Sa = coin \rightarrow (&pepsi \rightarrow think \rightarrow Sa | \\
+    &think \rightarrow (pepsi \rightarrow Sa | coin \rightarrow (sprite \rightarrow think \rightarrow Sa | think \rightarrow sprite \rightarrow Sa)))
+\end{align*}
+
+% paragraph a_ (end)
+
+\paragraph{b.} % (fold)
+\label{par:b_}
+
+The alphabet of the resulting process is $\alpha Sb = \{coin, pepsi, sprite, think\}$.
+\begin{align*}
+Sb &= Sa || THIRSTY1 \\
+    &= coin \rightarrow (think \rightarrow (pepsi \rightarrow Sa \\
+    &\phantom{=} | coin \rightarrow (sprite \rightarrow think \rightarrow Sa | think \rightarrow sprite \rightarrow Sa)) || THIRSTY1) & [2.3.1\;L7] \\
+    &= coin \rightarrow think \rightarrow coin \rightarrow ((sprite \rightarrow think \rightarrow Sa | think \rightarrow sprite \rightarrow Sa) \\
+    &\phantom{=} || THIRSTY1) & [2.3.1\;L5A\;\&\;L7] \\
+    &= coin \rightarrow think \rightarrow coin \rightarrow (sprite \rightarrow think \rightarrow Sb | think \rightarrow sprite \rightarrow Sb) \\
+\end{align*}
+
+% paragraph b_ (end)
+
+\paragraph{c.} % (fold)
+\label{par:c_}
+
+The alphabet of the resulting process is $\alpha Sc = \{coin, think, sprite, pepsi\}$. We first define:
+\begin{align*}
+Sc' &= (think \rightarrow RICH) || THIRSTY1 = think \rightarrow Sc | sprite \rightarrow Sc' & [2.3.1\;L7]
+\end{align*}
+
+We then find $Sc$ as
+\begin{align*}
+Sc &= (coin \rightarrow think \rightarrow RICH) || (sprite \rightarrow THIRSTY1) \\
+   &= coin \rightarrow ((think \rightarrow RICH) || THIRSTY1) \\
+   &\phantom{=} | sprite \rightarrow (RICH || THIRSTY1) & [2.3.1\;L7] \\
+   &= coin \rightarrow Sc' | sprite \rightarrow Sc 
+\end{align*}
+
+% paragraph c_ (end)
+
+\paragraph{d.} % (fold)
+\label{par:d_}
+
+The alphabet of the resulting process is $\alpha Sd = \{coin, think, sprite, pepsi \}$.
+\begin{align*}
+Sd &= (coin \rightarrow (pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM)) \\
+   &\phantom{=} || (coin \rightarrow Sc' | sprite \rightarrow Sc) \\
+   &= coin \rightarrow (pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM) || Sc' & [2.3.1\;L7] \\
+   &= coin \rightarrow think \rightarrow (Sc || (pepsi \rightarrow VM | coin \rightarrow sprite \rightarrow VM)) & [2.3.1\;L7] \\
+   &= coin \rightarrow think \rightarrow coin \rightarrow (Sc' || (sprite \rightarrow VM)) & [2.3.1\;L7] \\
+   &= coin \rightarrow think \rightarrow coin \rightarrow (think \rightarrow (Sc || (sprite \rightarrow VM)) | sprite \rightarrow (Sc' || VM)) & [2.3.1\;L7] \\
+   &= coin \rightarrow think \rightarrow coin \rightarrow (think \rightarrow sprite \rightarrow Sd | sprite \rightarrow think \rightarrow Sd) & [2 \times 2.3.1\;L7]
+\end{align*}
+
+% paragraph d_ (end)
+
+\paragraph{e.} % (fold)
+\label{par:e_}
+
+The alphabet of the resulting process is $\alpha Se = \{ coin, pepsi, sprite, think \}$.
+\begin{align*}
+Se &= Sa || THIRSTY2 \\
+   &= (coin \rightarrow (pepsi \rightarrow think \rightarrow Sa | \\
+   &\phantom{=} think \rightarrow (pepsi \rightarrow Sa | coin \rightarrow (sprite \rightarrow think \rightarrow Sa \\
+   &\phantom{=} | think \rightarrow sprite \rightarrow Sa)))) || THIRSTY2) \\
+   &= coin \rightarrow (pepsi \rightarrow ((think \rightarrow Sa) || THIRSTY2) \\
+   &\phantom{=} | think \rightarrow ((pepsi \rightarrow Sa | coin \rightarrow (sprite \rightarrow think \rightarrow Sa \\
+   &\phantom{=} | think \rightarrow sprite \rightarrow Sa))) || THIRSTY2)) & [2.3.1\;L5A\;\&\;L7] \\
+\end{align*}
+
+We then calculate
+\begin{align*}
+(think -> Sa) &|| THIRSTY2 = think -> Se & [2.3.1\;L5A]
+\end{align*}
+
+We then calculate 
+\begin{align*}
+& ((pepsi \rightarrow Sa | coin \rightarrow (sprite \rightarrow think \rightarrow Sa \\
+&\phantom{=} | think \rightarrow sprite \rightarrow Sa))) || THIRSTY2)) \\
+&= pepsi \rightarrow Se | coin \rightarrow ((sprite \rightarrow think \rightarrow Sa \\
+&\phantom{=} | think \rightarrow sprite \rightarrow Sa) || THIRSTY2) & [2.3.1\;L7] \\
+&= pepsi \rightarrow Se | coin \rightarrow think \rightarrow ((sprite \rightarrow Sa) || TH2) & [2.3.1\;L7] \\
+&= pepsi \rightarrow Se | coin \rightarrow think \rightarrow STOP & [2.3.1\;L7]
+\end{align*}
+
+The final result is then
+\begin{align*}
+Se = coin \rightarrow (pepsi \rightarrow think \rightarrow Se | think \rightarrow (pepsi \rightarrow Se | coin \rightarrow think \rightarrow STOP))
+\end{align*}
+
+% paragraph e_ (end)
+
+\paragraph{f.} % (fold)
+\label{par:f_}
+
+The alphabet of the resulting process is $\alpha Sf = \{coin, think, sprite, pepsi\}$. We first calculate
+\begin{align*}
+f(Sc) = coin \rightarrow f(Sc') | pepsi \rightarrow f(Sc)
+\end{align*}
+
+\begin{align*}
+
+\end{align*}
+
+% paragraph f_ (end)
+
 % section  (end)
 
 \section{} % (fold)
+
+\paragraph{a.} % (fold)
+\label{par:a_}
+2a-d does not include the $STOP$ process, and every branch ends with a recursive reference, thus no trace can reach a $STOP$ and deadlock.
+% paragraph a_ (end)
+
+\paragraph{b.} % (fold)
+\label{par:b_}
+Consider the following trace $<coin,think,coin,think,STOP>$. 
+% paragraph b_ (end)
+
+\paragraph{c.} % (fold)
+\label{par:c_}
+
+% paragraph c_ (end)
 
 % section  (end)
 
