@@ -19,21 +19,17 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "assignment1/report/report.tex",
-			"settings":
-			{
-				"buffer_size": 14264,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 98.0,
+		"height": 32.0,
 		"selected_items":
 		[
+			[
+				"side bar",
+				"View: Toggle Side Bar"
+			],
 			[
 				"side ba",
 				"View: Toggle Side Bar"
@@ -67,11 +63,15 @@
 	},
 	"file_history":
 	[
+		"/home/jens/repos/xmp2013/assignment1/src/main.go",
+		"/home/jens/repos/xmp2013/assignment1/src/machine.go",
+		"/home/jens/repos/xmp2013/assignment1/report/report-th.tex",
+		"/home/jens/repos/xmp2013/assignment1/report/report-pr.tex",
+		"/home/jens/repos/xmp2013/assignment1/report/report.tex",
+		"/home/jens/repos/pcsd2013/assignment3/report/figures/throughput.tex",
 		"/home/jens/documents/DIKU/year4/AP/exam/fredskov_jens_report.tex",
 		"/home/jens/documents/DIKU/year4/AP/exam/preamble.tex",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
-		"/home/jens/repos/xmp2013/assignment1/src/main.go",
-		"/home/jens/repos/xmp2013/assignment1/src/machine.go",
 		"/home/jens/repos/xmp2013/assignment1/src/machineOsc.go",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/GoSublime.sublime-settings"
@@ -92,6 +92,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"\\label",
 			"[1.10",
 			"[2.3",
 			"<",
@@ -117,36 +118,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "assignment1/report/report.tex",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 14264,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13884,
-								13865
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 5396.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -197,6 +170,10 @@
 	{
 		"height": 96.0
 	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
 	"project": "xmp2013.sublime-project",
 	"replace":
 	{
@@ -208,6 +185,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"machi",
+				"assignment1/src/machine.go"
+			]
 		],
 		"width": 0.0
 	},
@@ -233,7 +214,7 @@
 	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": false,
+	"side_bar_visible": true,
 	"side_bar_width": 179.0,
 	"status_bar_visible": true,
 	"template_settings":
