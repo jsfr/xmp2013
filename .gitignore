@@ -4,5 +4,6 @@
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+report.pdf
 
 
