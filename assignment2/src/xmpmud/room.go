@@ -7,7 +7,7 @@ import (
 
 func Room(req chan Cmd, out map[string](chan Cmd), items map[string]uint64,
 	players map[string](chan Cmd)) {
-	for {
+	for req != nil {
 		c := <-req
 		switch c.cmd[0] {
 		case "player":
@@ -27,7 +27,8 @@ func Room(req chan Cmd, out map[string](chan Cmd), items map[string]uint64,
 			c.resp <- Cmd{[]string{itemsDesc + "\n" + playersDesc}, nil}
 		case "n", "e", "s", "w":
 			if out[c.cmd[0]] != nil {
-				out[c.cmd[0]] <- Cmd{[]string{"player", c.cmd[1]}, players[c.cmd[1]]}
+				out[c.cmd[0]] <- Cmd{[]string{"player", c.cmd[1]},
+					players[c.cmd[1]]}
 				c.resp <- Cmd{[]string{"room"}, out[c.cmd[0]]}
 				delete(players, c.cmd[1])
 			} else {
@@ -50,9 +51,10 @@ func Room(req chan Cmd, out map[string](chan Cmd), items map[string]uint64,
 			items[item] += 1
 			c.resp <- Cmd{nil, nil}
 		case "exit":
-			fallthrough //TODO
+			req = nil
 		default:
-			fmt.Println("I always thought something was fundamentally wrong with the universe")
+			fmt.Println("I always thought something was fundamentally" +
+				" wrong with the universe")
 			c.resp <- Cmd{nil, nil}
 		}
 	}

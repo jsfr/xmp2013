@@ -1,0 +1,187 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ucs}
+\usepackage[english]{babel}
+\usepackage{mathtools, amsmath, amsfonts}
+\usepackage{fancyhdr}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{palatino,newtxmath}
+\usepackage{float}
+\usepackage[font={small,it}]{caption}
+% \usepackage{minted}
+\usepackage{fixltx2e}
+\usepackage{zed-csp}
+\usepackage[scaled]{helvet}
+
+\linespread{1.05}
+\pagestyle{fancyplain}
+\fancyhead{}
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{13.6pt}
+
+\widowpenalty=1000
+\clubpenalty=1000
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+% CSP shorthands
+\def\add{\textsf{add}}
+\def\after{\;/\;}
+\def\fetch{\textsf{fetch}}
+\def\Net{\textit{NET}}
+\def\Refusals{\textit{refusals}}
+\def\Ss{\textit{SS}}
+\def\Stop{\textit{STOP}_A}
+
+\title{ 
+\normalfont \normalsize 
+\textsc{University of Copenhagen} \\ [25pt]
+\horrule{0.5pt} \\[0.4cm]
+\huge XMP: Assignment 2 \\ \Large - Theory \\
+\horrule{2pt} \\[0.5cm]
+}
+
+\author{Jens Fredskov (chw752)}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\section{} % (fold)
+
+To find an equivalent definition of \textit{NET} we first eliminate the general choice in \textit{STORE\textsubscript{x}}, which can be done using the definition of general choice.
+\begin{align*}
+    \textit{STORE}_x
+    &= ( \add ? y \then \textit{STORE}_{x+y}) \extchoice (\fetch ! x \then \textit{STORE}_{x-1} ) \\
+    &= ( \add ? y \then \textit{STORE}_{x+y} \barchoice \fetch ! x \then \textit{STORE}_{x-1} )
+\end{align*}
+
+We then define and calculate the following auxillary process
+\begin{align*}
+    \Ss_x
+    &= \textit{STORE}_x \parallel \Stop \\
+    &= ( \add ? y \then \textit{STORE}_{x+y} \barchoice \fetch ! x \then \textit{STORE}_{x-1} ) \parallel \Stop \\
+    \intertext{we use [2.3.1 L7] where $A=\{\textsf{|fetch|}, \textsf{|add|}\}, B=\{\textsf{|add|}\}, C=\{\textsf{|fetch|}\}$}
+    &= \fetch ! x \then (\textit{STORE}_{x-1} \parallel \Stop) \\
+    &= \fetch ! x \then \Ss_{x-1}
+\end{align*}
+
+Finally we define the process \textit{NET\textsubscript{x}} as solving this for $x = 10$ is equivalent to \textit{NET}
+\begin{align*}
+    \textit{NET}_x
+    &= (\textit{STORE}_x \parallel ( \add ! 3 \then \Stop )) \hide A \\
+    \intertext{we first use [4.3 L1] and [2.3.1 L7] with $A=\{\textsf{|fetch|}, \textsf{|add|}\}, B=\{\textsf{add}.3\}, C=\{\textsf{|fetch|,\add.3}\}$}
+    &= (\add ! 3 \then (\textit{STORE}_{x+3} \parallel \Stop) \barchoice \fetch ! x \then (\textit{STORE}_{x-1} \parallel (\add ! 3 \then \Stop))) \hide A \\
+    &= (\add ! 3 \then \Ss_{x+3} \barchoice \fetch ! x \then \textit{NET}_{x-1}) \hide A \\
+    \intertext{We then apply the special case of [3.5.1 L10] given as an example just above the law}
+    &= \Ss_{x+3} \intchoice (\Ss_{x+3} \extchoice (\fetch ! x \then \textit{NET}_{x-1})) \\
+    &= \Ss_{x+3} \intchoice (\fetch ! (x+3) \then \Ss_{x+2} \barchoice \fetch ! x \then \textit{NET}_{x-1})
+\end{align*}
+%TODO: add rules and explanation of each step
+
+We now have the equivalent definition
+\begin{align*}
+    \textit{NET}
+    &= \textit{NET}_{10} \\
+    &= \Ss_{13} \intchoice (\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})
+\end{align*}
+
+% section  (end)
+
+\section{} % (fold)
+
+\paragraph{(a)} % (fold)
+To show that $s \in \Traces (\textit{NET})$ we first use [3.2.3 L1]
+\[
+    \Traces(\textit{NET}) = \Traces (\Ss_{13}) \union \underline{ \Traces (\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})}
+\]
+
+We then focus of the second expression and use [1.8.1 L3]
+\begin{align*}
+    \Traces (\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9}) = \set{t | t = \nil &\lor (t_0 = \textsf{ fetch} ! 13 \land t' \in \Traces(\Ss_{12})) \\
+    &\lor \underline { (t_0 = \fetch ! 10 \land t' \in \Traces(\textit{NET}_{9}))} }
+\end{align*}
+
+Again we focus on the second expression and use [3.2.3 L1]
+\[
+    \Traces(\textit{NET}_9) = \underline { \Traces (\Ss_{12}) } \union \Traces (\fetch ! 12 \then \Ss_{11} \barchoice \fetch ! 9 \then \textit{NET}_{8})
+\]
+
+We can now choose either of the two expressions (as they both contain $\fetch ! 12$) but for simplicity we choose the first, and use [1.8.1 L2] thrice
+\begin{align*}
+    \Traces(\Ss_{12}) &= \set{t | t = \nil \lor \underline{(t_0 = \fetch ! 12 \land t' \in \Traces(\Ss_{11}))}} \\
+    \Traces(\Ss_{11}) &= \set{t | t = \nil \lor \underline{(t_0 = \fetch ! 11 \land t' \in \Traces(\Ss_{10}))}} \\
+    \Traces(\Ss_{10}) &= \set{t | \underline{t = \nil} \lor (t_0 = \fetch ! 10 \land t' \in \Traces(\Ss_{9}))}
+\end{align*}
+
+% paragraph  (end)
+
+\paragraph{(b)} % (fold)
+We calculate $\textit{NET} \after s$ as
+\begin{align*}
+    \textit{NET} \after s
+    &= (\Ss_{13} \intchoice (\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})) \after s \\
+    &= (\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9}) \after s & [\text{3.2.3 L2}] \\
+    &= \textit{NET}_9 \after \trace{\fetch . 12, \fetch . 11} & [\text{1.8.3 L2 \& L3}] \\
+    &= (\Ss_{12} \after \trace{\fetch . 12, \fetch . 11}) \intchoice \\
+    &\quad ((\fetch ! 12 \then \Ss_{11} \barchoice \fetch ! 9 \then \textit{NET}_{8}) \after \trace{\fetch . 12, \fetch . 11}) & [\text{3.2.3 L2}] \\
+    &= \Ss_{10} \intchoice ((\fetch ! 12 \then \Ss_{11} \barchoice \fetch ! 9 \then \textit{NET}_{8}) \after \trace{\fetch . 12, \fetch . 11}) & [\text{2 $\times$ 1.8.3 L2 \& L3A}] \\
+    &= \Ss_{10} \intchoice (\Ss_{11} \after \trace{\fetch . 11}) & [\text{1.8.3 L2 \& L3}] \\
+    &= \Ss{10} \intchoice \Ss_{10} & [\text{1.8.3 L2 \& L3A}] \\
+    &= \Ss{10} & [\text{3.2.1 L1}]
+\end{align*}
+
+% paragraph (end)
+
+% section  (end)
+
+\pagebreak\section{} % (fold)
+
+\paragraph{(a)} % (fold)
+
+To show that $\set{\fetch . 10, \fetch . 42} \in \Refusals(\textit{NET})$ we first use [3.4.1 L4]
+\[
+    \Refusals(\Net) = \Refusals(\Ss_{13}) \union \Refusals(\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})
+\]
+
+We now only need to look at the first set of refusals as this process only wants to do $\fetch ! 13$ we have, using [3.4.1 L2], that
+\begin{align*}
+    \Refusals(\Ss_{13})
+    &= \set{ x | x \subseteq (\alpha \Ss_{x} − \fetch ! 13)} \\
+    &\implies \set{\fetch . 10, \fetch . 42} \in \Refusals(\Ss_{13}) \\
+    &\implies \set{\fetch . 10, \fetch . 42} \in \Refusals(\Net)
+\end{align*}
+
+At the same time we can also see that $\set{\fetch . 13} \notin \Refusals(\Ss_{13})$ thus for it to not be in $\Refusals(\Net)$ we need now only check that it is also not in the second set. We then use [3.4.1 L3]
+\begin{align*}
+    \Refusals(\fetch ! 13 &\then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})
+    = \set{ x | x \subseteq (\alpha \Ss_{x} − \set{\fetch ! 13, \fetch ! 10})} \\
+    &\implies \set{\fetch . 13} \notin \Refusals(\fetch ! 13 \then \Ss_{12} \barchoice \fetch ! 10 \then \textit{NET}_{9})
+\end{align*}
+
+Thus we have that $\set{\fetch . 13} \notin \Refusals(\Net)$
+
+% paragraph  (end)
+
+\paragraph{(b)} % (fold)
+
+To show that $\set{\fetch . 13, \fetch . 42} \in \Refusals(\textit{NET} \after s)$ and that $\set{\fetch . 10} \notin \Refusals(\textit{NET} \after s)$ we use [3.4.1~L2]
+\begin{align*}
+    \Refusals(\Net \after s)
+    &= \Refusals(\Ss_{10}) \\
+    &= \set{ x | x \subseteq (\alpha \Ss_{x} − \fetch ! 10)} \\
+    &\implies \set{\fetch . 13, \fetch . 42} \in \Refusals(\textit{NET} \after s) \land \set{\fetch . 10} \notin \Refusals(\textit{NET} \after s)
+\end{align*}
+
+% paragraph (end)
+
+% section  (end)
+
+\end{document}

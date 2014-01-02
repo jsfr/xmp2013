@@ -1,12 +1,12 @@
 package xmpmud
 
 import (
-	"fmt"
 	"strconv"
 )
 
-func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ctrl chan Cmd) {
-	for {
+func Player(ctrl chan Cmd, ctrlresp chan Cmd, resp chan Cmd, room chan Cmd,
+	id string, items map[string]uint64) {
+	for ctrl != nil {
 		req := (<-ctrl)
 		cmd := req.cmd
 		switch cmd[0] {
@@ -15,7 +15,7 @@ func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ct
 			result := <-resp
 			switch result.cmd[0] {
 			case "locked":
-				req.resp <- Cmd{[]string{"The door is locked"}, nil}
+				ctrlresp <- Cmd{[]string{"The door is locked"}, nil}
 			case "room":
 				room = result.resp
 				room <- Cmd{[]string{"look", id}, resp}
@@ -24,7 +24,9 @@ func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ct
 				for i, q := range items {
 					invDesc += strconv.FormatUint(q, 10) + " " + i + ", "
 				}
-				req.resp <- Cmd{[]string{"You enter the room and look around\n" + result.cmd[0] + "\n" + invDesc}, nil}
+				respCmd := "You enter the room and look around\n" +
+					result.cmd[0] + "\n" + invDesc
+				ctrlresp <- Cmd{[]string{respCmd}, nil}
 			}
 		case "look":
 			room <- Cmd{[]string{"look", id}, resp}
@@ -33,7 +35,7 @@ func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ct
 			for i, q := range items {
 				invDesc += strconv.FormatUint(q, 10) + " " + i + ", "
 			}
-			req.resp <- Cmd{[]string{result.cmd[0] + "\n" + invDesc}, nil}
+			ctrlresp <- Cmd{[]string{result.cmd[0] + "\n" + invDesc}, nil}
 		case "take":
 			item := cmd[1]
 			room <- Cmd{[]string{"take", id, item}, resp}
@@ -51,7 +53,7 @@ func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ct
 			case "empty":
 				text = "There is no " + item + " in the room"
 			}
-			req.resp <- Cmd{[]string{text}, nil}
+			ctrlresp <- Cmd{[]string{text}, nil}
 		case "leave":
 			item := cmd[1]
 			_, ok := items[item]
@@ -67,13 +69,14 @@ func Player(resp chan Cmd, room chan Cmd, id string, items map[string]uint64, ct
 			} else {
 				text = "Your inventory does not contain any " + item
 			}
-			req.resp <- Cmd{[]string{text}, nil}
-		case "exit":
-			fallthrough // TODO
+			ctrlresp <- Cmd{[]string{text}, nil}
 		case "player":
-			fmt.Println("\n", cmd[1], "entered the same room as", id, "\n> ")
+			ctrlresp <- Cmd{[]string{cmd[1] + " entered the room"}, nil}
+		case "exit":
+			close(ctrlresp)
+			ctrl = nil
 		default:
-			req.resp <- Cmd{[]string{"I'm sorry Dave, I'm afraid I can't do that"}, nil}
+			ctrlresp <- Cmd{[]string{"I'm sorry Dave, I'm afraid I can't do that"}, nil}
 		}
 	}
 }
