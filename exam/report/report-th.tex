@@ -1,0 +1,196 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ucs}
+\usepackage[english]{babel}
+\usepackage{mathtools, amsmath, amsfonts}
+\usepackage{fancyhdr}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{palatino,newtxmath}
+\usepackage{float}
+\usepackage[font={small,it}]{caption}
+\usepackage{fixltx2e}
+\usepackage{zed-csp}
+\usepackage[scaled]{helvet}
+\usepackage{fullpage}
+
+\linespread{1.05}
+\pagestyle{fancyplain}
+\fancyhead{}
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{13.6pt}
+
+\setcounter{secnumdepth}{0}
+\widowpenalty=1000
+\clubpenalty=1000
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+% CSP shorthands
+% \def\add{\textsf{add}}
+% \def\after{\;/\;}
+% \def\fetch{\textsf{fetch}}
+% \def\Net{\textit{NET}}
+% \def\Refusals{\textit{refusals}}
+% \def\Ss{\textit{SS}}
+% \def\Stop{\textit{STOP}_A}
+
+\def\Prod{\textit{PROD}}
+\def\Qual{\textit{QUAL}}
+\def\Mill{\textit{MILL}}
+\def\Stop{\textit{STOP}}
+\def\inc{\textsf{in}}
+\def\chk{\textsf{chk}}
+\def\rej{\textsf{rej}}
+\def\outc{\textsf{out}}
+\newcommand{\law}[2]{[#1\;\text{#2}]}
+\newcommand{\Tmp}[2]{\textit{TMP#1}_{#2}}
+
+\title{ 
+\normalfont \normalsize 
+\textsc{University of Copenhagen} \\ [25pt]
+\horrule{0.5pt} \\[0.4cm]
+\huge XMP: Exam \\ \Large - Theory \\
+\horrule{2pt} \\[0.5cm]
+}
+
+\author{Jens Fredskov (chw752)}
+
+\begin{document}
+\maketitle
+\pagebreak
+
+\section{Variation 1} % (fold)
+\label{sec:variation_1}
+
+\subsection{a)} % (fold)
+
+\begin{align*}
+    \Prod
+    &= (\inc ? x \then \chk ! (x-4) \then \Prod) \extchoice
+       (\rej ? y \then \chk ! (y-2) \then \Prod) \\
+    &= (\inc ? x \then \chk ! (x-4) \then \Prod) \barchoice
+       (\rej ? y \then \chk ! (y-2) \then \Prod) & \law{3.3.1}{L5} \\ \\
+    \Qual
+    &= \chk ? z \then ((\outc ! z \then \Qual) \lhd ok(z) \rhd
+                       (\rej ! z \then \Qual))
+\end{align*}
+
+\begin{align*}
+    \Tmp{0}{x}
+    &= (\chk ! x \then \Prod) \parallel \Qual \\
+    &= \chk . x \then (\Prod \parallel ((c ! z \then \Qual) \lhd ok(z) \rhd (\rej ! z \then \Qual))) \\
+    &= \chk . x \then ((\Prod \parallel (c ! z \then \Qual)) \lhd ok(z) \rhd (\Prod \parallel (\rej ! z \then \Qual))) \\ \\
+    LHS
+    &= \Prod \parallel (\outc ! x \then \Qual) \\
+    &= (\inc ? z \then ((\chk ! (z-4) \then \Prod) \parallel (\outc ! x \then \Qual)) \\
+    &\quad \barchoice \outc ! x \then (\Prod \parallel \Qual)) & \law{2.3.1}{L7} \\
+    &= (\inc ? z \then \outc ! x \then ((\chk ! (z-4) \then \Prod) \parallel \Qual) \\
+    &\quad \barchoice \outc ! x \then \inc ? z \then ((\chk ! (z-4) \then \Prod) \parallel \Qual)) & \law{2.3.1}{L5A/B} \\
+    &= (\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\ \\
+    RHS
+    &= \Prod \parallel (\rej ! x \then \Qual) \\
+    &= (\inc ? z \then ((\chk ! (z-4) \Prod) \parallel (\rej ! x \then \Qual)) \\
+    &\quad \barchoice \rej . x \then ((\chk ! (x-2) \then \Prod) \parallel \Qual)) & \law{2.3.1}{L7} \\
+    &= (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \\ \\
+    \Tmp{0}{x}
+    &= ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}))
+\end{align*}
+
+\begin{align*}
+    \Tmp{1}{x}
+    &= \Tmp{0}{x} \hide CR \\
+    &= (\chk . x \then ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}))) \hide CR \\
+    &= ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2})) \hide CR \\
+    &= (((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
+    &\quad \hide CR) \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR)) \\
+    &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
+    &\quad \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR)) \\
+    &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)))) \\ \\
+    \Tmp{2}{x}
+    &= \Tmp{1}{x} \extchoice (\inc ? z \then \Stop) \\
+    &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)))) \extchoice (\inc ? z \then \Stop) \\
+    &= (((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \extchoice (\inc ? z \then \Stop)) \\
+    &\quad \lhd ok(x) \rhd ((\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop))) \extchoice (\inc ? z \then \Stop))) \\ \\
+    LHS
+    &= (\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \extchoice (\inc ? z \then \Stop) \\
+    &= (\inc ? z \then ((\outc ! x \then \Tmp{1}{z-4}) \intchoice \Stop) \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) & \law{3.3.1}{L5} \\ \\
+    RHS
+    &= (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop))) \extchoice (\inc ? z \then \Stop) \\
+    &= (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \intchoice ((\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \extchoice (\inc ? z \then \Stop)) \\
+    &= \Tmp{2}{x-2} \intchoice \Tmp{2}{x-2} \\
+    &= \Tmp{2}{x-2} \\ \\
+    \Tmp{2}{x}
+    &= ((\inc ? z \then ((\outc ! x \then \Tmp{1}{z-4}) \intchoice \Stop) \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
+    &\quad \lhd ok(x) \rhd \Tmp{2}{x-2}) \\ \\
+    \Tmp{1}{x}
+    &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
+    &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice \Tmp{2}{x-2})) \\
+\end{align*}
+
+\begin{align*}
+    \Mill
+    &= (\Prod \parallel \Qual) \hide CR \\
+    &= (\inc ? x \then ((\chk ! (x-4) \then \Prod) \parallel \Qual)) \hide CR & \law{2.3.1}{L5A} \\
+    &= \inc ? x \then (\Tmp{0}{x-4} \hide CR) \\
+    &= \inc ? x \then \Tmp{1}{x-4}
+\end{align*}
+
+% subsection a_ (end)
+
+\subsection{b)} % (fold)
+
+% subsection b_ (end)
+
+\subsection{c)} % (fold)
+
+% subsection c_ (end)
+
+% section variation_1 (end)
+
+\section{Variation 2} % (fold)
+\label{sec:variation_2}
+
+\subsection{a)} % (fold)
+
+% subsection a_ (end)
+
+\subsection{b)} % (fold)
+
+% subsection b_ (end)
+
+\subsection{c)} % (fold)
+
+% subsection c_ (end)
+
+% section variation_2 (end)
+
+\section{Variation 3} % (fold)
+\label{sec:variation_3}
+
+\subsection{a)} % (fold)
+
+% subsection a_ (end)
+
+\subsection{b)} % (fold)
+
+% subsection b_ (end)
+
+\subsection{c)} % (fold)
+
+% subsection c_ (end)
+
+% section variation_3 (end)
+
+\end{document}

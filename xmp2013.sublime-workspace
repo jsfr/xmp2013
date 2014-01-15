@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"para",
+				"parallel	latex-mathsymbols"
+			],
+			[
+				"newco",
+				"newcommand{cmd}[args]{def}	latex-document"
+			],
+			[
 				"D",
 				"Done	bool ν"
 			],
@@ -87,9 +95,25 @@
 			"file": "exam/src/main.go",
 			"settings":
 			{
-				"buffer_size": 4000,
+				"buffer_size": 4553,
 				"line_ending": "Unix",
 				"name": "func Cell() {"
+			}
+		},
+		{
+			"file": "exam/report/report-th.tex",
+			"settings":
+			{
+				"buffer_size": 7128,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assignment2/report/report-th.tex",
+			"settings":
+			{
+				"buffer_size": 7634,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -99,6 +123,10 @@
 		"height": 375.0,
 		"selected_items":
 		[
+			[
+				"sideb",
+				"View: Toggle Side Bar"
+			],
 			[
 				"sort",
 				"Sort Lines"
@@ -212,7 +240,7 @@
 	],
 	"find":
 	{
-		"height": 46.0
+		"height": 36.0
 	},
 	"find_in_files":
 	{
@@ -226,6 +254,16 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\\Ttmp",
+			"\\Tmp",
+			"in[",
+			"3:",
+			"2:",
+			"id",
+			"tick",
+			",",
+			"printer",
+			"clock",
 			"size(",
 			"int64",
 			"ped",
@@ -261,6 +299,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"\\Tmp{1}",
+			"cell[",
 			"len(",
 			"int",
 			"pedestrian",
@@ -285,7 +325,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -294,28 +334,89 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4000,
+						"buffer_size": 4553,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								371,
-								371
+								3652,
+								3652
 							]
 						],
 						"settings":
 						{
 							"auto_name": "func Cell() {",
 							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2394.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "exam/report/report-th.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7128,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6851,
+								6851
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 546.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "assignment2/report/report-th.tex",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 7634,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 168.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
