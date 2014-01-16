@@ -33,15 +33,9 @@
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
 
 % CSP shorthands
-% \def\add{\textsf{add}}
-% \def\after{\;/\;}
-% \def\fetch{\textsf{fetch}}
-% \def\Net{\textit{NET}}
-% \def\Refusals{\textit{refusals}}
-% \def\Ss{\textit{SS}}
-% \def\Stop{\textit{STOP}_A}
-
 \def\Prod{\textit{PROD}}
+\def\Prodi{\textit{PRODI}}
+\def\Prodr{\textit{PRODR}}
 \def\Qual{\textit{QUAL}}
 \def\Mill{\textit{MILL}}
 \def\Stop{\textit{STOP}}
@@ -50,7 +44,11 @@
 \def\rej{\textsf{rej}}
 \def\outc{\textsf{out}}
 \newcommand{\law}[2]{[#1\;\text{#2}]}
+\def\lcd{[\text{LCD}]}
 \newcommand{\Tmp}[2]{\textit{TMP#1}_{#2}}
+\newcommand{\chan}[1]{|\!\!#1\!\!|}
+\def\after{\;/\;}
+\def\Refusals{\textit{refusals}}
 
 \title{ 
 \normalfont \normalsize 
@@ -71,6 +69,7 @@
 
 \subsection{a)} % (fold)
 
+We first consider our given processes to eliminate the general choice in $\Prod$.
 \begin{align*}
     \Prod
     &= (\inc ? x \then \chk ! (x-4) \then \Prod) \extchoice
@@ -82,79 +81,125 @@
                        (\rej ! z \then \Qual))
 \end{align*}
 
+We now define an auxiliary process $\Tmp{0}{x}$
 \begin{align*}
     \Tmp{0}{x}
     &= (\chk ! x \then \Prod) \parallel \Qual \\
-    &= \chk . x \then (\Prod \parallel ((c ! z \then \Qual) \lhd ok(z) \rhd (\rej ! z \then \Qual))) \\
-    &= \chk . x \then ((\Prod \parallel (c ! z \then \Qual)) \lhd ok(z) \rhd (\Prod \parallel (\rej ! z \then \Qual))) \\ \\
+    &= \chk . x \then (\Prod \parallel ((c ! z \then \Qual) \lhd ok(z) \rhd (\rej ! z \then \Qual))) & \law{2.3.1}{L4A} \\
+    &= \chk . x \then ((\Prod \parallel (c ! z \then \Qual)) \lhd ok(z) \rhd (\Prod \parallel (\rej ! z \then \Qual))) & \lcd
+    \intertext{With the sets $A=\set{\chan{\inc},\chan{\rej}}, B=\set{\outc . x}, C=\set{\chan{\inc}, \outc . x}$, the left hand side of the \textit{if-then}-clause becomes}
     LHS
     &= \Prod \parallel (\outc ! x \then \Qual) \\
     &= (\inc ? z \then ((\chk ! (z-4) \then \Prod) \parallel (\outc ! x \then \Qual)) \\
     &\quad \barchoice \outc ! x \then (\Prod \parallel \Qual)) & \law{2.3.1}{L7} \\
     &= (\inc ? z \then \outc ! x \then ((\chk ! (z-4) \then \Prod) \parallel \Qual) \\
     &\quad \barchoice \outc ! x \then \inc ? z \then ((\chk ! (z-4) \then \Prod) \parallel \Qual)) & \law{2.3.1}{L5A/B} \\
-    &= (\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\ \\
+    &= (\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4})
+    \intertext{With the sets $A=\set{\chan{\inc},\chan{\rej}}, B=\set{\rej . x}, C=\set{\chan{\inc}, \rej . x}$, the right hand side becomes}
     RHS
     &= \Prod \parallel (\rej ! x \then \Qual) \\
     &= (\inc ? z \then ((\chk ! (z-4) \Prod) \parallel (\rej ! x \then \Qual)) \\
     &\quad \barchoice \rej . x \then ((\chk ! (x-2) \then \Prod) \parallel \Qual)) & \law{2.3.1}{L7} \\
-    &= (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \\ \\
+    &= (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2})
+    \intertext{We then put the side together again}
     \Tmp{0}{x}
-    &= ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
+    &= \chk . x \then ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}))
 \end{align*}
 
+We now define a new process which is the same as before, but with $CR$ concealed.
 \begin{align*}
     \Tmp{1}{x}
     &= \Tmp{0}{x} \hide CR \\
     &= (\chk . x \then ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}))) \hide CR \\
     &= ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
-    &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2})) \hide CR \\
+    &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2})) \hide CR & \law{3.5.1}{L5} \\
     &= (((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
-    &\quad \hide CR) \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR)) \\
+    &\quad \hide CR) \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR))  & \lcd
+    \intertext{Then twice with sets $B=\set{\chan{\inc}, \outc . x}, C=\set{\chan{\chk}, \chan{\rej}}$}
     &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
-    &\quad \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR)) \\
+    &\quad \lhd ok(x) \rhd ((\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}) \hide CR)) & \law{3.5.1}{L8}
+    \intertext{Finally with sets $B=\set{\chan{\inc}, \rej . x}, C=\set{\chan{\chk}, \chan{\rej}}$}
     &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
-    &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)))) \\ \\
+    &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)))) &\law{3.5.1}{L10} \\ \\
+    \intertext{To eliminate the general choice after hiding $CR$ we define a new process}
     \Tmp{2}{x}
     &= \Tmp{1}{x} \extchoice (\inc ? z \then \Stop) \\
     &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)))) \extchoice (\inc ? z \then \Stop) \\
     &= (((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \extchoice (\inc ? z \then \Stop)) \\
-    &\quad \lhd ok(x) \rhd ((\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop))) \extchoice (\inc ? z \then \Stop))) \\ \\
+    &\quad \lhd ok(x) \rhd ((\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop))) \extchoice (\inc ? z \then \Stop))) & \lcd
+    \intertext{The left hand side of the \textit{if-then}-clause then becomes}
     LHS
     &= (\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \extchoice (\inc ? z \then \Stop) \\
-    &= (\inc ? z \then ((\outc ! x \then \Tmp{1}{z-4}) \intchoice \Stop) \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) & \law{3.3.1}{L5} \\ \\
+    &= (\inc ? z \then ((\outc ! x \then \Tmp{1}{z-4}) \intchoice \Stop) \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) & \law{3.3.1}{L5}
+    \intertext{And the right hand side becomes}
     RHS
     &= (\Tmp{1}{x-2} \intchoice (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop))) \extchoice (\inc ? z \then \Stop) \\
-    &= (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \intchoice ((\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \extchoice (\inc ? z \then \Stop)) \\
-    &= \Tmp{2}{x-2} \intchoice \Tmp{2}{x-2} \\
-    &= \Tmp{2}{x-2} \\ \\
+    &= (\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \intchoice ((\Tmp{1}{x-2} \extchoice (\inc ? z \then \Stop)) \extchoice (\inc ? z \then \Stop)) & \law{3.3.1}{L6}\\
+    &= \Tmp{2}{x-2} \intchoice \Tmp{2}{x-2} & \law{3.3.1}{L1-L3} \\
+    &= \Tmp{2}{x-2} & \law{3.2.1}{L1}
+    \intertext{We then put the side together again}
     \Tmp{2}{x}
     &= ((\inc ? z \then ((\outc ! x \then \Tmp{1}{z-4}) \intchoice \Stop) \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
-    &\quad \lhd ok(x) \rhd \Tmp{2}{x-2}) \\ \\
+    &\quad \lhd ok(x) \rhd \Tmp{2}{x-2})
+    \intertext{Finally we can use this in the definition of the earlier process}
     \Tmp{1}{x}
     &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice \Tmp{2}{x-2})) \\
 \end{align*}
 
+We are now ready to find an equivalent definition for $\Mill$ using the subprocesses we have created.
 \begin{align*}
     \Mill
     &= (\Prod \parallel \Qual) \hide CR \\
     &= (\inc ? x \then ((\chk ! (x-4) \then \Prod) \parallel \Qual)) \hide CR & \law{2.3.1}{L5A} \\
-    &= \inc ? x \then (\Tmp{0}{x-4} \hide CR) \\
+    &= \inc ? x \then (\Tmp{0}{x-4} \hide CR) & \law{3.5.1}{L5} \\
     &= \inc ? x \then \Tmp{1}{x-4}
 \end{align*}
 
 % subsection a_ (end)
 
 \subsection{b)} % (fold)
+One trace which could make $\Mill$ deadlock is $s = \trace{\inc . 106, \inc . 106}$. We first show that $s \in \Traces(\Mill)$.
+\begin{align*}
+    \Traces(\Mill)
+    &= \Traces(\inc ? 106 \then \Tmp{1}{102}) \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\Tmp{1}{102})})} & \law{1.8.1}{L2} \\
+    \Traces(\Tmp{1}{102})
+    &= \Traces(\Tmp{1}{100} \intchoice \Tmp{2}{100}) \\
+    &= \Traces(\Tmp{1}{100}) \union \underline{\Traces(\Tmp{2}{100})} & \law{3.2.3}{L1} \\
+    \Traces(\Tmp{2}{100})
+    &= \Traces(\inc ? 106 \then ((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop) \\
+    &\qquad\qquad \barchoice \outc ! 100 \then \inc ? 106 \then \Tmp{1}{102})) \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . 106 \land t' = \Traces((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop))} \\
+    &\quad\qquad\qquad \lor (t_0 = \outc . 100 \land t' = \Traces(\inc ? 106 \then \Tmp{1}{102}))} & \law{1.8.1}{L3} \\
+    \Traces((\outc ! 100 &\then \Tmp{1}{102}) \intchoice \Stop)
+    = \Traces((\outc ! 100 \then \Tmp{1}{102})) \union \underline{\Traces(\Stop)} & \law{3.2.3}{L1} \\
+    \Traces(\Stop)
+    &= \set{\underline{\nil}} & \law{1.8.1}{L1}
+\end{align*}
+
+Notice that we here have substituted the variables with actual values, as this means we easily can choose the correct side of the \textit{if-else}-clause. We now show that $\Mill \after s = \Stop$.
+\begin{align*}
+    \Mill \after s
+    &= (\inc ? x \then \Tmp{1}{x-4}) \after \trace{\inc . 106, \inc . 106} \\
+    &= \Tmp{1}{102} \after \trace{\inc . 106} & \law{1.8.3}{L3A} \\
+    &= (\Tmp{1}{100} \after \trace{\inc . 106}) \intchoice (\Tmp{2}{100} \after \trace{\inc . 106}) & \law{3.2.3}{L2} \\
+    &= ((\outc ! 100 \then \Tmp{1}{102}) \after \nil) \intchoice (\Tmp{2}{100} \after \trace{\inc . 106}) & \law{1.8.3}{L3} \\
+    &= (\outc ! 100 \then \Tmp{1}{102}) \intchoice ((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop) \after \nil) & \law{1.8.3}{L3A} \\
+    &= (\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop & \law{3.2.1}{L1}
+\end{align*}
+
+Now depending on which side of the internal choice $\Mill$ chooses we get that $\Mill \after s = \Stop$.
+
+To see that we indeed have a deadlock we consider the state of $\Prod$ and $\Qual$. After the first action $\Qual$ will be trying to send $\rej$ as the log was too long. However as only $\Prod$ has the $\inc$-channel it is allowed to choose both of its branches, and thus it might choose the first as this does not require participation from the environment ($\Qual$). In this situtation $\Prod$ will be waiting on $\chk$ which $\Qual$ is unwilling to do at the moment, and $\Qual$ will be waiting on $\rej$ which $\Prod$ is unwilling to do. Thus we clearly have a deadlock.
 
 % subsection b_ (end)
 
 \subsection{c)} % (fold)
-
+If we consider the trace from the previous question we could simply add one more action such that $t = \trace{\inc . 106, \inc . 106, \outc . 100}$. We have already calculated $\Mill \after s$. Thus we can just calculate $\Refusals(\Mill \after s)$. We first use \law{3.4.1}{L4}. Then since $\Stop$ refuses the entire alphabet, per \law{3.4.1}{L1}, we have that $\set{\outc . 100} \in \Refusals(\Mill \after s)$. We however also have that $\trace{\outc . 100} \in \Traces(\Mill \after s)$, as per \law{3.2.3}{L2} and \law{1.8.3}{L3A}. This proves that that $\Mill \after s$, and therefore also $\Mill$, may behave nondeterministically.
 % subsection c_ (end)
 
 % section variation_1 (end)
@@ -185,6 +230,68 @@
 
 \subsection{b)} % (fold)
 
+We consider a trace where we read the a value which is rejected first time around thrice (the third does not have to reject). This could e.g. be
+\[
+    t = \trace{\inc . 108, \inc . 108, \inc . 108}    
+\]
+To show that this can create a deadlock we consider the state of $\Qual$ and $\Prod''$ after the trace. For $\Prod''$ the trace we use will have $\rej$ and $\chk$ injected and the trace then becomes
+\[
+    t_1 = \trace{\inc . 108, \chk . 104, \rej . 104, \inc . 108, \chk . 104, \inc . 108}
+\]
+For $\Qual$ we remove $\inc$ and inject $\rej$ and $\chk$, giving us the following trace
+\[
+    t_2 = \trace{\chk . 104, \rej . 104, \chk . 104}
+\]
+We now run the two processes in parallel to show that we reach a point after $t$ where $\Mill''$ will have be in a state of deadlock.
+\begin{align*}
+    \Prod' \after t_1
+    &= ((\inc ? x \then \chk ! (x-4) \then \Prodi) \\
+    &\quad\interleave (\rej ? y \then \chk ! (y-2) \then \Prodr)) \after t_1 \\
+    \Qual \after t_2
+    &= (\chk ? z \then ((\outc ! z \then \Qual) \\
+    &\quad\lhd ok(z) \rhd (\rej ! z \then \Qual))) \after t_2
+    \intertext{$\Prod'$ first read from $\inc$}
+    \Prod' \after t_1
+    &= ((\chk ! (104) \then \Prodi) \\
+    &\quad \interleave (\rej ? y \then \chk ! (y-2) \then \Prodr)) \after t_1' & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= (\chk ? z \then ((\outc ! z \then \Qual) \\
+    &\quad \lhd ok(z) \rhd (\rej ! z \then \Qual))) \after t_2
+    \intertext{Both are now willing to do $\chk$}
+    \Prod' \after t_1
+    &= (\Prodi \\
+    &\quad\interleave (\rej ? y \then \chk ! (y-2) \then \Prodr)) \after t_1'' & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= ((\outc ! 104 \then \Qual) \\
+    &\quad \lhd ok(104) \rhd (\rej ! 104 \then \Qual)) \after t_2' & \law{1.8.3 }{L3A}
+    \intertext{$ok(104)$ is false and, both are now willing to do $\rej$}
+    \Prod' \after t_1
+    &= ((\inc ? x \then \chk ! (x-4) \then \Prodi) \\
+    &\quad\interleave (\chk ! (102) \then \Prodr)) \after \trace{\inc . 108, \chk . 104, \inc . 108} & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= (\Qual) \after \trace{\chk . 104} & \law{5.5.1}{L8}+ \law{1.8.3 }{L3A}
+    \intertext{$\Prod'$ now does another read from $\inc$}
+    \Prod' \after t_1
+    &= ((\chk ! (104) \then \Prodi) \\
+    &\quad\interleave (\chk ! (102) \then \Prodr)) \after \trace{\chk . 104, \inc . 108} & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= (\chk ? z \then ((\outc ! z \then \Qual) \\
+    &\quad\lhd ok(z) \rhd (\rej ! z \then \Qual))) \after \trace{\chk . 104}
+    \intertext{This is the turning point. Instead of handling the rejected log first we let $\Prodi$ do $\chk$ together with $\Qual$}
+    \Prod' \after t_1
+    &= (\Prodi \\
+    &\quad\interleave (\chk ! (102) \then \Prodr)) \after \trace{\inc . 108} & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= ((\outc ! 104 \then \Qual) \\
+    &\quad\lhd ok(104) \rhd (\rej ! 104 \then \Qual)) & \law{1.8.3}{L3A}
+    \intertext{Finally $\Prod'$ reads another value from $\inc$ and the system then looks as following}
+    \Prod' \after t_1
+    &= (\chk ! (104) \then \Prodi) \interleave (\chk ! (102) \then \Prodr) & \law{3.6.2}{L3} + \law{1.8.3}{L3A} \\
+    \Qual \after t_2
+    &= \rej ! 104 \then \Qual & \law{5.5.1}{L8}
+\end{align*}
+
+Clearly we have now reached a deadlock as both of $\Prodi$ and $\Prodr$ wants to send on $\chk$, which $\Qual$ is unwilling to receive, and $\Qual$ wants to send on $\rej$ which both $\Prodi$ and $\Prodr$ is unwilling to receive.
 % subsection b_ (end)
 
 \subsection{c)} % (fold)
