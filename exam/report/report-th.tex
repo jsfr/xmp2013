@@ -36,6 +36,7 @@
 \def\Prod{\textit{PROD}}
 \def\Prodi{\textit{PRODI}}
 \def\Prodr{\textit{PRODR}}
+\def\Prodn{\textit{PRODN}_x}
 \def\Qual{\textit{QUAL}}
 \def\Mill{\textit{MILL}}
 \def\Stop{\textit{STOP}}
@@ -64,8 +65,8 @@
 \maketitle
 \pagebreak
 
-\section{Variation 1} % (fold)
-\label{sec:variation_1}
+\section{Problem 1} % (fold)
+\label{sec:problem_1}
 
 \subsection{a)} % (fold)
 
@@ -80,7 +81,6 @@ We first consider our given processes to eliminate the general choice in $\Prod$
     &= \chk ? z \then ((\outc ! z \then \Qual) \lhd ok(z) \rhd
                        (\rej ! z \then \Qual))
 \end{align*}
-
 We now define an auxiliary process $\Tmp{0}{x}$
 \begin{align*}
     \Tmp{0}{x}
@@ -106,7 +106,6 @@ We now define an auxiliary process $\Tmp{0}{x}$
     &= \chk . x \then ((\inc ? z \then \outc ! x \then \Tmp{0}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{0}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\inc ? z \then \Stop \barchoice \rej . x \then \Tmp{0}{x-2}))
 \end{align*}
-
 We now define a new process which is the same as before, but with $CR$ concealed.
 \begin{align*}
     \Tmp{1}{x}
@@ -149,7 +148,6 @@ We now define a new process which is the same as before, but with $CR$ concealed
     &= ((\inc ? z \then \outc ! x \then \Tmp{1}{z-4} \barchoice \outc ! x \then \inc ? z \then \Tmp{1}{z-4}) \\
     &\quad \lhd ok(x) \rhd (\Tmp{1}{x-2} \intchoice \Tmp{2}{x-2})) \\
 \end{align*}
-
 We are now ready to find an equivalent definition for $\Mill$ using the subprocesses we have created.
 \begin{align*}
     \Mill
@@ -172,15 +170,14 @@ One trace which could make $\Mill$ deadlock is $s = \trace{\inc . 106, \inc . 10
     &= \Traces(\Tmp{1}{100}) \union \underline{\Traces(\Tmp{2}{100})} & \law{3.2.3}{L1} \\
     \Traces(\Tmp{2}{100})
     &= \Traces(\inc ? 106 \then ((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop) \\
-    &\qquad\qquad \barchoice \outc ! 100 \then \inc ? 106 \then \Tmp{1}{102})) \\
+    &\hspace{4em} \barchoice \outc ! 100 \then \inc ? 106 \then \Tmp{1}{102})) \\
     &= \set{t | t = \nil \lor \underline{(t_0 = \inc . 106 \land t' = \Traces((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop))} \\
-    &\quad\qquad\qquad \lor (t_0 = \outc . 100 \land t' = \Traces(\inc ? 106 \then \Tmp{1}{102}))} & \law{1.8.1}{L3} \\
+    &\hspace{5em}\lor (t_0 = \outc . 100 \land t' = \Traces(\inc ? 106 \then \Tmp{1}{102}))} & \law{1.8.1}{L3} \\
     \Traces((\outc ! 100 &\then \Tmp{1}{102}) \intchoice \Stop)
     = \Traces((\outc ! 100 \then \Tmp{1}{102})) \union \underline{\Traces(\Stop)} & \law{3.2.3}{L1} \\
     \Traces(\Stop)
     &= \set{\underline{\nil}} & \law{1.8.1}{L1}
 \end{align*}
-
 Notice that we here have substituted the variables with actual values, as this means we easily can choose the correct side of the \textit{if-else}-clause. We now show that $\Mill \after s = \Stop$.
 \begin{align*}
     \Mill \after s
@@ -191,7 +188,6 @@ Notice that we here have substituted the variables with actual values, as this m
     &= (\outc ! 100 \then \Tmp{1}{102}) \intchoice ((\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop) \after \nil) & \law{1.8.3}{L3A} \\
     &= (\outc ! 100 \then \Tmp{1}{102}) \intchoice \Stop & \law{3.2.1}{L1}
 \end{align*}
-
 Now depending on which side of the internal choice $\Mill$ chooses we get that $\Mill \after s = \Stop$.
 
 To see that we indeed have a deadlock we consider the state of $\Prod$ and $\Qual$. After the first action $\Qual$ will be trying to send $\rej$ as the log was too long. However as only $\Prod$ has the $\inc$-channel it is allowed to choose both of its branches, and thus it might choose the first as this does not require participation from the environment ($\Qual$). In this situtation $\Prod$ will be waiting on $\chk$ which $\Qual$ is unwilling to do at the moment, and $\Qual$ will be waiting on $\rej$ which $\Prod$ is unwilling to do. Thus we clearly have a deadlock.
@@ -202,12 +198,65 @@ To see that we indeed have a deadlock we consider the state of $\Prod$ and $\Qua
 If we consider the trace from the previous question we could simply add one more action such that $t = \trace{\inc . 106, \inc . 106, \outc . 100}$. We have already calculated $\Mill \after s$. Thus we can just calculate $\Refusals(\Mill \after s)$. We first use \law{3.4.1}{L4}. Then since $\Stop$ refuses the entire alphabet, per \law{3.4.1}{L1}, we have that $\set{\outc . 100} \in \Refusals(\Mill \after s)$. We however also have that $\trace{\outc . 100} \in \Traces(\Mill \after s)$, as per \law{3.2.3}{L2} and \law{1.8.3}{L3A}. This proves that that $\Mill \after s$, and therefore also $\Mill$, may behave nondeterministically.
 % subsection c_ (end)
 
-% section variation_1 (end)
+% section problem_1 (end)
 
-\section{Variation 2} % (fold)
-\label{sec:variation_2}
+\section{Problem 2} % (fold)
+\label{sec:problem_2}
 
 \subsection{a)} % (fold)
+
+We first show that $\Prod' \sqsubseteq_T \Prod$. We consider the composition traces from $\Prod$, which has two different branches one can go down. Using \law{1.8.1}{L2-L3}, we can easily see that the first branch has the traces
+\[
+\set{\nil, \trace{\inc . x}, \trace{\inc . x, \chk . (x-4)}}
+\]
+In the same way the second branch has the traces
+\[
+\set{\nil, \trace{\rej . y}, \trace{\rej . y, \chk . (y-2)}}
+\]
+After the longest trace in both of the branches we go back to $\Prod$ and can then again do either of the branches. Thus if we define the sets
+\begin{align*}
+S &= \set{\trace{\inc . x, \chk . (x-4)}, \trace{\rej . y, \chk . (y-2)}} \\
+T &= \set{\nil, \trace{\inc . x}, \trace{\rej . y}}
+\end{align*}
+We can describe all traces of $\Prod$ as
+\[
+    \Traces(\Prod) = \set{(s^n) \cat t | n \in \mathbb{Z}_{\ge 0} \land s \in S \land t \in T}
+\]
+We now need to show that $\Prod'$ can do all of these traces too. We first rewrite the definition of $\Prod'$ by expanding $\Prodn$ once and eliminating general choice
+\begin{align*}
+    \Prod'
+    &= (\inc ? x \then \Prodn) \extchoice (\rej ? y \then \chk ! (y-2) \then \Prod') \\
+    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \extchoice (\rej ? y \then \chk ! (y-2) \then \Prodn))) \\
+    &\quad \extchoice (\rej ? y \then \chk ! (y-2) \then \Prod') \\
+    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \barchoice (\rej ? y \then \chk ! (y-2) \then \Prodn))) \\
+    &\quad \barchoice (\rej ? y \then \chk ! (y-2) \then \Prod') & \law{3.3.1}{L5} \\
+\end{align*}
+If we ignore the inner branch which leads to $\Prodn$ this definition has the exact same branches as $\Prod$. Thus we can go down either of these two branches to generate the same traces as in $\Prod$.
+
+We then show that $\Prod \nsqsubseteq_T \Prod'$. This is done by exhibiting a trace $s \in \Traces(\Prod') \land s \notin \Traces(\Prod)$. Consider e.g. $s = \trace{\inc . x, \rej . y}$. We first try to produce the trace in $\Prod$
+\begin{align*}
+  \Traces(\Prod)
+  &= \Traces((\inc ? x \then \chk ! (x-4) \then \Prod) \\
+  &\quad\barchoice (\rej ? y \then \chk ! (y-2) \then \Prod)) \\
+  &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\chk ! (x-4) \then \Prod)}) \\
+  &\hspace{5em} \lor (t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prod))} & \law{1.8.1}{L3} \\
+  \Traces(\chk ! (x-4) \then \Prod)
+  &= \set{t | t = \nil \lor (t_0 = \chk . (x-4) \land t' \in \Traces(\Prod))} & \law{1.8.1}{L2}
+\end{align*}
+As can be seen $s \notin \Traces(\Prod)$. We now try to produce the trace in $\Prod'$
+\begin{align*}
+    \Traces(\Prod')
+    &= \Traces(\inc ? x \then \Prodn \barchoice \rej ? y \then \chk ! (y-2) \then \Prod') \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\Prodn)}) \\
+    &\hspace{5em} \lor (t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prod'))} & \law{1.8.1}{L3} \\
+    \Traces(\Prodn)
+    &= \Traces(\chk ! (x-4) \then \Prod' \barchoice \rej ? y \then \chk ! (y-2) \then \Prodn) \\
+    &= \set{t | t = \nil \lor (t_0 = \chk . (x - 4) \land t' \in \Traces(\Prod')) \\
+    &\hspace{5em} \lor \underline{(t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prodn)})} & \law{1.8.1}{L3} \\
+    \Traces(\chk ! (y-2) \then \Prodn)
+    &= \set{t | \underline{t = \nil} \lor (t_0 = \chk . (y-2) \land t' \in \Traces(\Prodn))} & \law{1.8.1}{L2}
+\end{align*}
+As seen $s \in \Traces(\Prod')$, proving that $\Prod \nsqsubseteq_T \Prod'$.
 
 % subsection a_ (end)
 
@@ -219,10 +268,10 @@ If we consider the trace from the previous question we could simply add one more
 
 % subsection c_ (end)
 
-% section variation_2 (end)
+% section problem_2 (end)
 
-\section{Variation 3} % (fold)
-\label{sec:variation_3}
+\section{Problem 3} % (fold)
+\label{sec:problem_3}
 
 \subsection{a)} % (fold)
 
@@ -290,7 +339,6 @@ We now run the two processes in parallel to show that we reach a point after $t$
     \Qual \after t_2
     &= \rej ! 104 \then \Qual & \law{5.5.1}{L8}
 \end{align*}
-
 Clearly we have now reached a deadlock as both of $\Prodi$ and $\Prodr$ wants to send on $\chk$, which $\Qual$ is unwilling to receive, and $\Qual$ wants to send on $\rej$ which both $\Prodi$ and $\Prodr$ is unwilling to receive.
 % subsection b_ (end)
 
@@ -298,6 +346,6 @@ Clearly we have now reached a deadlock as both of $\Prodi$ and $\Prodr$ wants to
 
 % subsection c_ (end)
 
-% section variation_3 (end)
+% section problem_3 (end)
 
 \end{document}

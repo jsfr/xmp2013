@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"sqs",
+				"sqsupseteq	latex-mathsymbols"
+			],
+			[
 				"para",
 				"parallel	latex-mathsymbols"
 			],
@@ -92,27 +96,10 @@
 	"buffers":
 	[
 		{
-			"file": "exam/src/main.go",
-			"settings":
-			{
-				"buffer_size": 4553,
-				"line_ending": "Unix",
-				"name": "func Cell() {"
-			}
-		},
-		{
 			"file": "exam/report/report-th.tex",
 			"settings":
 			{
-				"buffer_size": 7128,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "assignment2/report/report-th.tex",
-			"settings":
-			{
-				"buffer_size": 7634,
+				"buffer_size": 18866,
 				"line_ending": "Unix"
 			}
 		}
@@ -120,9 +107,41 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 375.0,
+		"height": 102.0,
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"togle si",
+				"View: Toggle Side Bar"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"minim",
+				"View: Toggle Minimap"
+			],
+			[
+				"mini",
+				"View: Toggle Minimap"
+			],
 			[
 				"sideb",
 				"View: Toggle Side Bar"
@@ -142,18 +161,6 @@
 			[
 				"Build: ",
 				"Build: Build"
-			],
-			[
-				"ena",
-				"Package Control: Enable Package"
-			],
-			[
-				"disa",
-				"Package Control: Disable Package"
-			],
-			[
-				"insta",
-				"Package Control: Install Package"
 			],
 			[
 				"instal",
@@ -196,24 +203,29 @@
 	},
 	"file_history":
 	[
+		"/home/jens/repos/xmp2013/assignment2/report/report-th.tex",
+		"/home/jens/repos/xmp2013/exam/src/main.go",
+		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/jens/repos/configz/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/jens/repos/xmp2013/assignment1/report/report-th.tex",
+		"/home/jens/repos/xmp2013/exam/report/report-th.log",
+		"/home/jens/repos/xmp2013/exam/report/report-th.fls",
+		"/home/jens/repos/xmp2013/exam/report/report-th.aux",
+		"/home/jens/repos/xmp2013/xmp2013.sublime-project",
 		"/home/jens/repos/xmp2013/assignment2/src/main.go",
 		"/home/jens/repos/xmp2013/assignment2/report/communication.dia",
 		"/home/jens/repos/xmp2013/assignment1/report/report.aux",
 		"/home/jens/repos/xmp2013/assignment2/src/xmpmud/structs.go",
 		"/home/jens/documents/DIKU/year4/AP/assignments/assignment0/fredskov_jens_report0.tex",
 		"/home/jens/repos/xmp2013/assignment2/report/report-pr.tex",
-		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/jens/repos/xmp2013/assignment2/src/xmpmud/room.go",
 		"/home/jens/repos/xmp2013/assignment2/src/xmpmud/player.go",
 		"/home/jens/repos/xmp2013/assignment2/src/xmpmud/controller.go",
-		"/home/jens/repos/xmp2013/assignment2/report/report-th.tex",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/LaTeXing/Default.sublime-keymap",
 		"/home/jens/repos/xmp2013/assignment2/report/report-th.pyg",
 		"/home/jens/repos/xmp2013/assignment2/report/report-th.log",
 		"/home/jens/repos/xmp2013/assignment2/report/report-th.fls",
 		"/home/jens/repos/xmp2013/assignment2/report/report-th.aux",
-		"/home/jens/repos/xmp2013/assignment1/report/report-th.tex",
-		"/home/jens/repos/xmp2013/xmp2013.sublime-project",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/LaTeXSQ/LaTeXSQ.sublime-settings",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/LaTeXing.sublime-settings",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/LaTeXing/LaTeXing.sublime-settings",
@@ -254,6 +266,15 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"variation",
+			"Variation",
+			"solid",
+			"$\\Mill$",
+			"$\\rej$",
+			"$\\inc$",
+			"$\\Prod$",
+			"$\\chk$",
+			"$\\Qual$",
 			"\\Ttmp",
 			"\\Tmp",
 			"in[",
@@ -299,6 +320,14 @@
 		"regex": false,
 		"replace_history":
 		[
+			"problem",
+			"Problem",
+			"\\Mill",
+			"\\rej",
+			"\\inc",
+			"\\Prod",
+			"\\chk",
+			"\\Qual",
 			"\\Tmp{1}",
 			"cell[",
 			"len(",
@@ -325,98 +354,38 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "exam/src/main.go",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4553,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3652,
-								3652
-							]
-						],
-						"settings":
-						{
-							"auto_name": "func Cell() {",
-							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2394.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "exam/report/report-th.tex",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7128,
+						"buffer_size": 18866,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6851,
-								6851
+								11360,
+								11367
 							]
 						],
 						"settings":
 						{
+							"spell_check": true,
 							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 546.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "assignment2/report/report-th.tex",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 7634,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": -0.0,
-						"translation.y": 168.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -497,6 +466,10 @@
 		"selected_items":
 		[
 			[
+				"assignem2-th",
+				"assignment2/report/report-th.tex"
+			],
+			[
 				"assignment2-th",
 				"assignment2/report/report-th.tex"
 			],
@@ -529,7 +502,7 @@
 	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 166.0,
 	"status_bar_visible": true,
 	"template_settings":
