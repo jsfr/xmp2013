@@ -36,7 +36,10 @@
 \def\Prod{\textit{PROD}}
 \def\Prodi{\textit{PRODI}}
 \def\Prodr{\textit{PRODR}}
-\def\Prodn{\textit{PRODN}_x}
+\def\Prodnx{\textit{PRODN}_x}
+\def\Proda{\textit{PRODA}_x}
+\def\Prodb{\textit{PRODB}_y}
+\def\Prodc{\textit{PRODC}_{x,y}}
 \def\Qual{\textit{QUAL}}
 \def\Mill{\textit{MILL}}
 \def\Stop{\textit{STOP}}
@@ -47,9 +50,11 @@
 \newcommand{\law}[2]{[#1\;\text{#2}]}
 \def\lcd{[\text{LCD}]}
 \newcommand{\Tmp}[2]{\textit{TMP#1}_{#2}}
+\newcommand{\Prodn}[1]{\textit{PRODN}_{#1}}
 \newcommand{\chan}[1]{|\!\!#1\!\!|}
 \def\after{\;/\;}
 \def\Refusals{\textit{refusals}}
+\def\Interleaves{\;\textit{interleaves}\;}
 
 \title{ 
 \normalfont \normalsize 
@@ -205,7 +210,7 @@ If we consider the trace from the previous question we could simply add one more
 
 \subsection{a)} % (fold)
 
-We first show that $\Prod' \sqsubseteq_T \Prod$. We consider the composition traces from $\Prod$, which has two different branches one can go down. Using \law{1.8.1}{L2-L3}, we can easily see that the first branch has the traces
+We first show that $\Prod' \sqsubseteq_T \Prod$. We consider the composition of traces from $\Prod$, which has two different branches one can go down. Using \law{1.8.1}{L2-L3}, we can easily see that the first branch has the traces
 \[
 \set{\nil, \trace{\inc . x}, \trace{\inc . x, \chk . (x-4)}}
 \]
@@ -213,7 +218,7 @@ In the same way the second branch has the traces
 \[
 \set{\nil, \trace{\rej . y}, \trace{\rej . y, \chk . (y-2)}}
 \]
-After the longest trace in both of the branches we go back to $\Prod$ and can then again do either of the branches. Thus if we define the sets
+After the longest trace in both of the branches go back to $\Prod$ and can then again do either of the branches. Thus if we define the sets
 \begin{align*}
 S &= \set{\trace{\inc . x, \chk . (x-4)}, \trace{\rej . y, \chk . (y-2)}} \\
 T &= \set{\nil, \trace{\inc . x}, \trace{\rej . y}}
@@ -222,16 +227,16 @@ We can describe all traces of $\Prod$ as
 \[
     \Traces(\Prod) = \set{(s^n) \cat t | n \in \mathbb{Z}_{\ge 0} \land s \in S \land t \in T}
 \]
-We now need to show that $\Prod'$ can do all of these traces too. We first rewrite the definition of $\Prod'$ by expanding $\Prodn$ once and eliminating general choice
+We now need to show that $\Prod'$ can do all of these traces too. We first rewrite the definition of $\Prod'$ by expanding $\Prodnx$ once and eliminating general choice
 \begin{align*}
     \Prod'
-    &= (\inc ? x \then \Prodn) \extchoice (\rej ? y \then \chk ! (y-2) \then \Prod') \\
-    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \extchoice (\rej ? y \then \chk ! (y-2) \then \Prodn))) \\
+    &= (\inc ? x \then \Prodnx) \extchoice (\rej ? y \then \chk ! (y-2) \then \Prod') \\
+    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \extchoice (\rej ? y \then \chk ! (y-2) \then \Prodnx))) \\
     &\quad \extchoice (\rej ? y \then \chk ! (y-2) \then \Prod') \\
-    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \barchoice (\rej ? y \then \chk ! (y-2) \then \Prodn))) \\
+    & = (\inc ? x \then ((\chk ! (x-4) \then \Prod') \barchoice (\rej ? y \then \chk ! (y-2) \then \Prodnx))) \\
     &\quad \barchoice (\rej ? y \then \chk ! (y-2) \then \Prod') & \law{3.3.1}{L5} \\
 \end{align*}
-If we ignore the inner branch which leads to $\Prodn$ this definition has the exact same branches as $\Prod$. Thus we can go down either of these two branches to generate the same traces as in $\Prod$.
+If we ignore the inner branch which leads to $\Prodnx$ this definition has the exact same branches as $\Prod$. Thus we can go down either of these two branches to generate the same traces as in $\Prod$.
 
 We then show that $\Prod \nsqsubseteq_T \Prod'$. This is done by exhibiting a trace $s \in \Traces(\Prod') \land s \notin \Traces(\Prod)$. Consider e.g. $s = \trace{\inc . x, \rej . y}$. We first try to produce the trace in $\Prod$
 \begin{align*}
@@ -246,22 +251,24 @@ We then show that $\Prod \nsqsubseteq_T \Prod'$. This is done by exhibiting a tr
 As can be seen $s \notin \Traces(\Prod)$. We now try to produce the trace in $\Prod'$
 \begin{align*}
     \Traces(\Prod')
-    &= \Traces(\inc ? x \then \Prodn \barchoice \rej ? y \then \chk ! (y-2) \then \Prod') \\
-    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\Prodn)}) \\
+    &= \Traces(\inc ? x \then \Prodnx \barchoice \rej ? y \then \chk ! (y-2) \then \Prod') \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\Prodnx)}) \\
     &\hspace{5em} \lor (t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prod'))} & \law{1.8.1}{L3} \\
-    \Traces(\Prodn)
-    &= \Traces(\chk ! (x-4) \then \Prod' \barchoice \rej ? y \then \chk ! (y-2) \then \Prodn) \\
+    \Traces(\Prodnx)
+    &= \Traces(\chk ! (x-4) \then \Prod' \barchoice \rej ? y \then \chk ! (y-2) \then \Prodnx) \\
     &= \set{t | t = \nil \lor (t_0 = \chk . (x - 4) \land t' \in \Traces(\Prod')) \\
-    &\hspace{5em} \lor \underline{(t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prodn)})} & \law{1.8.1}{L3} \\
-    \Traces(\chk ! (y-2) \then \Prodn)
-    &= \set{t | \underline{t = \nil} \lor (t_0 = \chk . (y-2) \land t' \in \Traces(\Prodn))} & \law{1.8.1}{L2}
+    &\hspace{5em} \lor \underline{(t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prodnx)})} & \law{1.8.1}{L3} \\
+    \Traces(\chk ! (y-2) \then \Prodnx)
+    &= \set{t | \underline{t = \nil} \lor (t_0 = \chk . (y-2) \land t' \in \Traces(\Prodnx))} & \law{1.8.1}{L2}
 \end{align*}
 As seen $s \in \Traces(\Prod')$, proving that $\Prod \nsqsubseteq_T \Prod'$.
 
 % subsection a_ (end)
 
 \subsection{b)} % (fold)
+The problem in 1b was that $\Prod$ was only able to do $\chk$ after it had done $\inc$, and since meant that we risked getting in a situation where a log is fails the tests, and thus $\Qual$ wishes to send it back on $\rej$. But instead of doing $\rej$ $\Prod$ could also $\inc$ again, meaning it would then be unwilling to do $\rej$ and instead wanting to do $\chk$, which $\Qual$ would be unwilling to do.
 
+Thus the situtation we need to check in 
 % subsection b_ (end)
 
 \subsection{c)} % (fold)
@@ -274,12 +281,71 @@ As seen $s \in \Traces(\Prod')$, proving that $\Prod \nsqsubseteq_T \Prod'$.
 \label{sec:problem_3}
 
 \subsection{a)} % (fold)
+We first show that $\Prod'' \sqsubseteq_T \Prod'$. We consider the state of $\Prod'$ after some trace. Before reaching a process definition $\Prod'$ can do the trace $s = \trace{\inc . x}$ or $t = \trace{\rej . y, \chk . (y - 2)}$. after the traces we have (using \law{3.3.1}{L5} to eliminate external choice and then \law{1.8.3}{L3} to determine the process after the trace)
+\[
+    \Prod' \after s = \Prodnx \\
+    \Prod' \after t = \Prod'
+\]
+We thus see, that if we do that latter trace in $\Prod''$, and $\Prod'' \after t = \Prod''$ Then $\Prod''$ can do every possible trace that $\Prod'$ can do when going down its latter branch (as the both reach their own definition after the trace). It is easily seen using \law{3.6.2}{L3} and \law{1.8.3}{L3A} that the trace $t$ results in $\Prodr$ being advanced up to its recursive definition and thus $\Prod'' \after t = \Prod''$.
 
+We now consider the first branch of $\Prod'$. After doing the trace $s$ we reach $\Prodnx$, whereas we in $\Prod''$, using \law{3.6.2}{L3} and \law{1.8.3}{L3A}, have that
+\[
+    \Prod'' \after s = (\chk ! (x-4) \then \Prodi) \interleave \Prodr = \Prodnx''
+\]
+For ease of use we have renamed the process after $s$. Both processes can thus do the trace of the first branch, after which they reach a new process definition. We therefore now consider whether we can do the same traces in $\Prodnx''$ as can be done in $\Prodnx$.
+
+As with $\Prod'$ we consider the traces of $\Prodnx$. Before reaching a process definition $\Prodnx$ can do the trace $p = \trace{\chk . (x-4)}$ or $t$. Again we have after each trace that (using \law{3.3.1}{L5} to eliminate external choice and then \law{1.8.3}{L3} to determine the process after the trace)
+\[
+    \Prodnx \after p = \Prod' \\
+    \Prodnx \after t = \Prodnx
+\]
+Like before we then consider $\Prodnx'' \after t$. As before and citing the same laws $t$ advances $\Prodr$ up to its recursive definition, and thus
+\[
+    \Prodnx'' \after t = \Prodnx''
+\]
+As before $\Prodnx''$ can thus produce the same traces as the second branch of $\Prodnx$ because they both reach their own definition.
+
+We then consider $\Prodnx'' \after p$. Again using using \law{3.6.2}{L3} and \law{1.8.3}{L3A}, we have that
+\[
+    \Prodnx'' \after p = \Prod''
+\]
+
+Thus we are now back at the original definition for both processes. This means that $\Prodnx''$ can do the traces of $\Prodnx$ if $\Prod''$ can do the traces of $\Prod'$, and that $\Prod''$ can do the traces of $\Prod'$ if $\Prodnx''$ can do the traces of $\Prodnx$. Since we know that second branches can be done, we have recursively covered all branches of $\Prod'$, meaning that $\Prod'' \sqsubseteq_T \Prod'$.
+
+We now show that $\Prod' \nsqsubseteq_T \Prod''$. This is done by exhibiting a trace $s \in \Traces(\Prod'') \land s \notin \Traces(\Prod')$. Consider e.g. $s = \trace{\rej . y, \inc . x}$. We first try to produce the trace in $\Prod'$
+\begin{align*}
+    \Traces(\Prod')
+    &= \Traces(\inc ? x \then \Prodnx \barchoice \rej ? y \then \chk ! (y-2) \then \Prod') \\
+    &= \set{t | t = \nil \lor (t_0 = \inc . x \land t' \in \Traces(\Prodnx)) \\
+    &\hspace{5em} \lor \underline{(t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prod'))}} & \law{1.8.1}{L3} \\
+    \Traces(\chk ! (y-2) \then \Prod')
+    &= \set{t | t = \nil \lor (t_0 = \chk . (y-2) \land t' \in \Traces(\Prod'))} & \law{1.8.1}{L2}
+\end{align*}
+As can be seen we have no way to produce $s$ and so $s \notin \Traces(\Prod')$. We now try to produce the trace in $\Prod''$.
+\begin{align*}
+    \Traces(\Prod'')
+    &= \Traces(\Prodi \interleave \Prodr) \\
+    &= \set{s | \exists t : \Traces(\Prodi) \spot \exists u : \Traces(\Prodr) \spot s \Interleaves (t,u)}
+\end{align*}
+If we now define the traces $t = \trace{\inc . x}$ and $u = \trace{\rej . y}$, we need only show that $t \in \Traces(\Prodi)$ and $u \in \Traces(\Prodr)$, as one interleaving of these are $s$
+\begin{align*}
+    \Traces(\Prodr)
+    &= \Traces(\inc ? x \then \chk ! (x-4) \then \Prodi) \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \inc . x \land t' \in \Traces(\chk ! (x-4) \then \Prodi))}} & \law{1.8.1}{L2} \\
+    \Traces(\chk ! (x-4) \then \Prodi)
+    &= \set{t | \underline{t = \nil} \lor (t_0 = \chk . (x-4) \land t' \in \Traces(\Prodi))} & \law{1.8.1}{L2} \\ \\
+    \Traces(\Prodr)
+    &= \Traces(\rej ? y \then \chk ! (y-2) \then \Prodr) \\
+    &= \set{t | t = \nil \lor \underline{(t_0 = \rej . y \land t' \in \Traces(\chk ! (y-2) \then \Prodr))}} & \law{1.8.1}{L2} \\
+    \Traces(\chk ! (y-2) \then \Prodr)
+    &= \set{t | \underline{t = \nil} \lor (t_0 = \chk . (y-2) \land t' \in \Traces(\Prodr))} & \law{1.8.1}{L2} \\ \\
+\end{align*}
+Thus we have shown that $s \in \Traces(\Prod'')$ and therefore that $\Prod' \nsqsubseteq_T$ \Prod''.
 % subsection a_ (end)
 
 \subsection{b)} % (fold)
 
-We consider a trace where we read the a value which is rejected first time around thrice (the third does not have to reject). This could e.g. be
+We consider a trace where we read a value which is rejected first time around thrice (the third does not have to reject). This could e.g. be
 \[
     t = \trace{\inc . 108, \inc . 108, \inc . 108}    
 \]
@@ -291,7 +357,7 @@ For $\Qual$ we remove $\inc$ and inject $\rej$ and $\chk$, giving us the followi
 \[
     t_2 = \trace{\chk . 104, \rej . 104, \chk . 104}
 \]
-We now run the two processes in parallel to show that we reach a point after $t$ where $\Mill''$ will have be in a state of deadlock.
+We now run the two processes in parallel to show that we reach a point after $t$ where $\Mill''$ will be in a state of deadlock.
 \begin{align*}
     \Prod' \after t_1
     &= ((\inc ? x \then \chk ! (x-4) \then \Prodi) \\
@@ -343,7 +409,42 @@ Clearly we have now reached a deadlock as both of $\Prodi$ and $\Prodr$ wants to
 % subsection b_ (end)
 
 \subsection{c)} % (fold)
-
+To show this we first rewrite $\Prod''$
+\begin{align*}
+    \Prod''
+    &= \Prodi \interleave \Prodr \\
+    &= (\inc ? x \then ((\chk ! (x-4) \then \Prodi) \interleave \Prodr)) \\
+    &\quad \extchoice (\rej ? y \then (\Prodi \interleave (\chk ! (y-2) \then \Prodr))) & \law{3.6.1}{L6}
+    \intertext{We now define a new process $\Proda$}
+    \Proda
+    &= (\chk ! (x-4) \then \Prodi) \interleave \Prodr \\
+    &= (\chk ! (x-4) \then (\Prodi \interleave \Prodr)) \\
+    &\quad \extchoice (\rej ? y \then ((\chk ! (x-4) \then \Prodi) \interleave (\chk ! (y-2) \then \Prodr))) & \law{3.6.1}{L6} \\
+    &= (\chk ! (x-4) \then \Prod'') \\
+    &\quad \extchoice (\rej ? y \then ((\chk ! (x-4) \then \Prodi) \interleave (\chk ! (y-2) \then \Prodr)))
+    \intertext{We now define a new process $\Prodb$}
+    \Prodb
+    &= \Prodi \interleave (\chk ! (y-2) \then \Prodr) \\
+    &= (\inc ? x \then ((\chk ! (x-4) \then \Prodi) \interleave (\chk ! (y-2) \then \Prodr))) \\
+    &\quad \extchoice (\chk ! (y-2) \then (\Prodi \interleave \Prodr)) & \law{3.6.1}{L6} \\
+    &= (\inc ? x \then ((\chk ! (x-4) \then \Prodi) \interleave (\chk ! (y-2) \then \Prodr))) \\
+    &\quad \extchoice (\chk ! (y-2) \then \Prod'')
+    \intertext{We now define a new process $\Prodc$}
+    \Prodc 
+    &= (\chk ! (x-4) \then \Prodi) \interleave (\chk ! (y-2) \then \Prodr) \\
+    &= (\chk ! (x-4) \then (\Prodi \interleave (\chk ! (y-2) \then \Prodr))) \\
+    &\quad \extchoice (\chk ! (y-2) \then ((\chk ! (x-4) \then \Prodi) \interleave \Prodr)) & \law{3.6.1}{L6} \\
+    &= (\chk ! (x-4) \then \Prodb \extchoice (\chk ! (y-2) \then \Proda) \\
+    \intertext{Using the definition of each process we then have}
+    \Prod''
+    &= (\inc ? x \then \Proda \barchoice \rej ? y \then \Prodb) & \law{3.3.1}{L5}\\
+    \Proda
+    &= (\chk ! (x-4) \then \Prod'' \barchoice \rej ? y \then \Prodc) & \law{3.3.1}{L5} \\
+    \Prodb
+    &= (\inc ? x \then \Prodc \barchoice \chk ! (y-2) \then \Prod'') & \law{3.3.1}{L5} \\
+    \Prodc 
+    &= (\chk ! (x-4) \then \Prodb \extchoice (\chk ! (y-2) \then \Proda) \\
+\end{align*}
 % subsection c_ (end)
 
 % section problem_3 (end)

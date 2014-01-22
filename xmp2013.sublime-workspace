@@ -95,21 +95,17 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "exam/report/report-th.tex",
-			"settings":
-			{
-				"buffer_size": 18866,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 102.0,
+		"height": 79.0,
 		"selected_items":
 		[
+			[
+				"sideba",
+				"View: Toggle Side Bar"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -203,6 +199,9 @@
 	},
 	"file_history":
 	[
+		"/home/jens/repos/xmp2013/exam/report/report-th.tex",
+		"/home/jens/repos/xmp2013/exam/code-brainstorm",
+		"/home/jens/repos/xmp2013/exam/src/newmain.go",
 		"/home/jens/repos/xmp2013/assignment2/report/report-th.tex",
 		"/home/jens/repos/xmp2013/exam/src/main.go",
 		"/home/jens/repos/configz/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
@@ -266,6 +265,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Prodn",
 			"variation",
 			"Variation",
 			"solid",
@@ -320,6 +320,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"Prodnx",
 			"problem",
 			"Problem",
 			"\\Mill",
@@ -354,40 +355,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "exam/report/report-th.tex",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 18866,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11360,
-								11367
-							]
-						],
-						"settings":
-						{
-							"spell_check": true,
-							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -502,7 +471,7 @@
 	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": false,
+	"side_bar_visible": true,
 	"side_bar_width": 166.0,
 	"status_bar_visible": true,
 	"template_settings":
