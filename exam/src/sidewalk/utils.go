@@ -35,18 +35,18 @@ func directions(d Direction) (l []Direction) {
 	return
 }
 
-func makeCoords(x int, y int) [][]string {
-	coords := make([][]string, y)
+func makeCoords(x int, y int) [][]bool {
+	coords := make([][]bool, y)
 	for i, _ := range coords {
-		coords[i] = make([]string, x)
+		coords[i] = make([]bool, x)
 		for j, _ := range coords[i] {
-			coords[i][j] = ""
+			coords[i][j] = false
 		}
 	}
 	return coords
 }
 
-func setCoords(val string, coords *[][]string) {
+func setCoords(val bool, coords *[][]bool) {
 	for i, _ := range *coords {
 		for j, _ := range (*coords)[i] {
 			(*coords)[i][j] = val

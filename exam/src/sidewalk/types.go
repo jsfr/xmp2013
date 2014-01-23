@@ -15,8 +15,9 @@ type Msg struct {
 }
 
 type Pedestrian struct {
-	Id   string
-	Dirc Direction
+	Dirc  Direction
+	Ok    bool
+	Drunk bool
 }
 
 type Coordinate struct {
