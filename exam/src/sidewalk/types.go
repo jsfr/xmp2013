@@ -1,14 +1,6 @@
 package sidewalk
 
-type CmdWord int
 type Direction int
-
-const (
-	CmdPause CmdWord = iota
-	CmdResume
-	CmdRate
-	CmdDrunk
-)
 
 const (
 	Up Direction = iota
@@ -23,10 +15,8 @@ type Msg struct {
 }
 
 type Pedestrian struct {
-	Id    string
-	Dirc  Direction
-	Clock chan bool
-	Done  chan bool
+	Id   string
+	Dirc Direction
 }
 
 type Coordinate struct {
