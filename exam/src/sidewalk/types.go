@@ -1,6 +1,8 @@
 package sidewalk
 
 type Direction int
+type State int
+type CmdWord int
 
 const (
 	Up Direction = iota
@@ -9,15 +11,28 @@ const (
 	Left
 )
 
+const (
+	GotDrunk State = iota
+	GotSober
+	Regular
+)
+
+const (
+	CmdResume CmdWord = iota
+	CmdPause
+	CmdTime
+	CmdExit
+)
+
 type Msg struct {
-	Rsp   chan bool
-	Agent Pedestrian
+	Rsp    chan bool
+	Agent  Pedestrian
+	Status State
 }
 
 type Pedestrian struct {
-	Dirc  Direction
-	Ok    bool
-	Drunk bool
+	Dirc Direction
+	Ok   bool
 }
 
 type Coordinate struct {
@@ -25,7 +40,13 @@ type Coordinate struct {
 	Y int
 }
 
-type PrintMsg struct {
-	Coord Coordinate
-	Id    string
+type DrunkRequest struct {
+	ReqCoord  Coordinate
+	DrunkDirc Direction
+	Rsp       chan bool
+}
+
+type ClockRequest struct {
+	Cmd CmdWord
+	Arg []int
 }

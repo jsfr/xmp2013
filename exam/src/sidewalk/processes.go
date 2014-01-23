@@ -1,31 +1,49 @@
 package sidewalk
 
 import (
-	"bufio"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
 /**
  * Used to synchronize all agents and keep them in lock-step with each other,
- * the injectors and the printer
+ * the injectors, the printer and the drunk.
  */
 func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
-	injs [](chan bool), printer chan bool, steps int, controller chan bool) {
+	injs [](chan bool), printer chan bool, steps int, controller chan ClockRequest,
+	drunk chan bool) {
 	agents := 0
+	wait := 500
 	<-controller
 	for step := 0; step <= steps; step++ {
 		select {
-		case play := <-controller:
-			if !play {
-				for !play {
-					// wait to be unpaused
-					play = <-controller
+		case cmd := <-controller:
+			switch cmd.Cmd {
+			case CmdPause:
+				paused := true
+				for paused {
+					cmd := <-controller
+					switch cmd.Cmd {
+					case CmdResume:
+						paused = false
+					case CmdExit:
+						// TODO
+					case CmdTime:
+						wait = cmd.Arg[0]
+					default:
+						// Do nothing
+					}
 				}
+			case CmdExit:
+				// TODO
+			case CmdTime:
+				wait = cmd.Arg[0]
+			default:
+				// Do nothing
 			}
 		default:
+			// do nothing
 		}
 		for i := 0; i < agents; i++ {
 			// tick the clock for agents
@@ -39,6 +57,7 @@ func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
 			}
 		}
 		agents -= agentRemove
+		drunk <- true
 		for _, inj := range injs {
 			// tick every injector
 			inj <- true
@@ -50,18 +69,18 @@ func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
 				agents++
 			}
 		}
-		time.Sleep(500 * time.Millisecond)
-
 		// Now everone has moved and the printer can print
 		printer <- true
 		<-printer
+		time.Sleep(time.Duration(wait) * time.Millisecond)
 	}
 }
 
 /**
- * Injects players a specific cell every given step (default = 4)
+ * Injects players a specific cell every given step (default = 4).
  */
-func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction, ctrl chan int) {
+func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction,
+	ctrl chan int) {
 	step := 4
 	n := 0
 	rsp := make(chan bool)
@@ -72,8 +91,8 @@ func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction, 
 		case <-clock:
 			var agent Pedestrian
 			if n%step == 0 { // create a new player
-				agent = Pedestrian{d, true, false}
-				cell <- Msg{rsp, agent}
+				agent = Pedestrian{d, true}
+				cell <- Msg{rsp, agent, Regular}
 				if !<-rsp {
 					agent.Ok = false
 				}
@@ -89,15 +108,18 @@ func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction, 
  * ANSI escape characters work in the terminal, as these are used to
  * overwrite the board every step.
  */
-func Printer(in chan Coordinate, clock chan bool, x int, y int) {
+func Printer(in chan Coordinate, drunk chan Coordinate, clock chan bool, x int, y int) {
 	coords := makeCoords(x, y)
+	drunkCoord := Coordinate{-1, -1}
 	step := 0
 	for {
 		select {
 		case c := <-in:
 			coords[c.Y][c.X] = true // An agent is here in this turn
+		case c := <-drunk:
+			drunkCoord = c
 		case <-clock:
-			os.Stdout.WriteString("\033[s\033[0;0HStep " + strconv.Itoa(step) + "\r\n")
+			os.Stdout.WriteString("\033[s\033[0;0H\r\nStep: " + strconv.Itoa(step) + "\r\n")
 			hline := ""
 			for i := 0; i < x+2; i++ {
 				hline += "="
@@ -107,9 +129,12 @@ func Printer(in chan Coordinate, clock chan bool, x int, y int) {
 			for i, _ := range coords {
 				line := "|"
 				for j, _ := range coords[len(coords)-i-1] {
-					if coords[len(coords)-i-1][j] {
+					switch {
+					case drunkCoord.X == j && drunkCoord.Y == (len(coords)-i-1):
+						line += "@"
+					case coords[len(coords)-i-1][j]:
 						line += "o"
-					} else {
+					default:
 						line += " "
 					}
 				}
@@ -118,6 +143,7 @@ func Printer(in chan Coordinate, clock chan bool, x int, y int) {
 
 			}
 			os.Stdout.WriteString(hline)
+			os.Stdout.WriteString("o = pedestrian, @ = drunk\r\n")
 			os.Stdout.WriteString("\033[u")
 			setCoords(false, &coords)
 			step++
@@ -132,23 +158,42 @@ func Printer(in chan Coordinate, clock chan bool, x int, y int) {
  * it every timestep, until it suceeds.
  */
 func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordinate,
-	agentClock chan bool, agentDone chan bool) {
+	agentClock chan bool, agentDone chan bool, drunk chan DrunkRequest) {
 	var agent Pedestrian
 	oldAgent := false
 	rsp := make(chan bool)
+	isDrunk := false
 	for {
+		done := false
 		if !oldAgent {
 			msg := <-in
 			agent = msg.Agent
 			msg.Rsp <- true
 			printer <- coord
+			if msg.Status == GotDrunk {
+				// this cell is now permanently occupied by a drunk
+				isDrunk = true
+				for isDrunk {
+					msg := <-in
+					msg.Rsp <- false
+					if msg.Status == GotSober {
+						isDrunk = false
+						done = true
+					}
+				}
+			}
 		}
-		done := false
 		for !done {
 			select {
 			case <-agentClock:
 				d := directions(agent.Dirc)
 				tries := 0
+				drunk <- DrunkRequest{coord, d[tries], rsp}
+				if <-rsp {
+					// Do not go the original direction if a drunk is nearby
+					// that way. We hate drunkards!
+					tries++
+				}
 
 				for tries < 3 && !done {
 					if out[d[tries]] == nil {
@@ -158,7 +203,7 @@ func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordina
 						done = true
 					} else {
 						select {
-						case out[d[tries]] <- Msg{rsp, agent}:
+						case out[d[tries]] <- Msg{rsp, agent, Regular}:
 							if <-rsp {
 								oldAgent = false
 								done = true
@@ -187,24 +232,102 @@ func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordina
 }
 
 /**
+ * Controls the drunk (insertion and movement).
+ * Cells query for the position of the drunk.
+ * The process is also in charge of moving the drunk around.
+ */
+func Drunkard(in chan DrunkRequest, cells [][](chan Msg), ctrl chan Coordinate,
+	printer chan Coordinate, clock chan bool, x int, y int) {
+	rsp := make(chan bool)
+	drunk := Coordinate{-1, -1}
+	for {
+		select {
+		case req := <-in:
+			req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
+		case coord := <-ctrl:
+			if !validCoord(drunk, x, y) {
+				done := false
+				for !done {
+					select {
+					case cells[coord.Y][coord.X] <- Msg{rsp, Pedestrian{Up, false}, GotDrunk}:
+						done = true
+					case req := <-in:
+						req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
+					}
+				}
+				if <-rsp {
+					drunk = coord
+					printer <- coord
+					ctrl <- coord
+				} else {
+					// Indicates that something went wrong
+					ctrl <- Coordinate{-1, -1}
+				}
+			} else {
+				ctrl <- Coordinate{-1, -1}
+			}
+		case <-clock:
+			if validCoord(drunk, x, y) {
+				randomCoord := randomDirc(drunk, x, y)
+				if validCoord(randomCoord, x, y) {
+					done := false
+					for !done {
+						select {
+						case cells[randomCoord.Y][randomCoord.X] <- Msg{rsp, Pedestrian{Up, false}, GotDrunk}:
+							done = true
+						case req := <-in:
+							req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
+						}
+					}
+					if <-rsp {
+						done = false
+						for !done {
+							select {
+							case cells[drunk.Y][drunk.X] <- Msg{rsp, Pedestrian{Up, false}, GotSober}:
+								<-rsp
+								done = true
+							case req := <-in:
+								req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
+							}
+						}
+						drunk = randomCoord
+						printer <- randomCoord
+					}
+				} else {
+					cells[drunk.Y][drunk.X] <- Msg{rsp, Pedestrian{Up, false}, GotSober}
+					<-rsp
+					drunk = Coordinate{-1, -1}
+					printer <- drunk
+				}
+			}
+		}
+	}
+}
+
+/**
  * Creates a rectangular sidewalk with the given dimensions, the simulation
  * runs the specified number of steps. The injectors are added at the given
  * coordinates, and with the given directions.
  */
 func Sidewalk(x int, y int, injs []Coordinate, ds []Direction, steps int) {
-	clockCtrl := make(chan bool)
-	injChs := make([](chan bool), len(injs))
-	injCtrl := make([](chan int), len(injs))
-	clockIn := make(chan Pedestrian)
-	printerClock := make(chan bool)
 	agentClock := make(chan bool)
 	agentDone := make(chan bool)
-	printer := make(chan Coordinate)
 	cells := makeMsgChs(x, y)
+	clockCtrl := make(chan ClockRequest)
+	clockIn := make(chan Pedestrian)
+	drunkClock := make(chan bool)
+	drunkCtrl := make(chan Coordinate)
+	drunkPrinter := make(chan Coordinate)
+	drunkReq := make(chan DrunkRequest)
+	injChs := make([](chan bool), len(injs))
+	injCtrl := make([](chan int), len(injs))
+	printer := make(chan Coordinate)
+	printerClock := make(chan bool)
 	for i := 0; i < y; i++ {
 		for j := 0; j < x; j++ {
 			out := getOutChs(j, i, x, y, cells)
-			go Cell(cells[i][j], out, printer, Coordinate{j, i}, agentClock, agentDone)
+			go Cell(cells[i][j], out, printer, Coordinate{j, i}, agentClock,
+				agentDone, drunkReq)
 		}
 	}
 	for i, _ := range injs {
@@ -214,45 +337,8 @@ func Sidewalk(x int, y int, injs []Coordinate, ds []Direction, steps int) {
 		injy := injs[i].Y
 		go Injector(injChs[i], cells[injy][injx], clockIn, ds[i], injCtrl[i])
 	}
-	go Printer(printer, printerClock, x, y)
-	go Clock(clockIn, agentClock, agentDone, injChs, printerClock, steps, clockCtrl)
-	Controller(clockCtrl, injCtrl, y)
-}
-
-/**
- * The shell used for interaction with the player. The shell expects ANSI
- * escape characters to work in the terminal, as these are used to overwrite
- * old output.
- */
-func Controller(clock chan bool, injs [](chan int), y int) {
-	os.Stdout.WriteString("\033[0;0H\033[J\033[" + strconv.Itoa(y+4) + ";0H")
-	clock <- true
-	for {
-		os.Stdout.WriteString("\033[Kcmd> ")
-		stdin := bufio.NewReader(os.Stdin)
-		input, _ := stdin.ReadString('\n')
-		cmd := strings.Split(strings.ToLower(strings.TrimSpace(input)), " ")
-		switch cmd[0] {
-		case "pause":
-			clock <- false
-			os.Stdout.WriteString("Simulation paused\033[F")
-		case "resume":
-			clock <- true
-			os.Stdout.WriteString("Simulation resumed\033[F")
-		case "rate":
-			i, _ := strconv.Atoi(cmd[1])
-			if i > 0 && i < 11 {
-				for _, inj := range injs {
-					inj <- i
-				}
-				os.Stdout.WriteString("Rate changed to " + cmd[1] + "\033[F")
-			} else {
-				os.Stdout.WriteString("Rate but be between 1 and 10\033[F")
-			}
-		case "drunk":
-		case "exit":
-		default:
-			os.Stdout.WriteString("Unknown command\033[F")
-		}
-	}
+	go Printer(printer, drunkPrinter, printerClock, x, y)
+	go Drunkard(drunkReq, cells, drunkCtrl, drunkPrinter, drunkClock, x, y)
+	go Clock(clockIn, agentClock, agentDone, injChs, printerClock, steps, clockCtrl, drunkClock)
+	Controller(clockCtrl, injCtrl, drunkCtrl, x, y)
 }
