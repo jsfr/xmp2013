@@ -1,8 +1,0 @@
-Ideas to the code
-
-- Have a clock with a player counter
-- Dont wait for clock beats, but when you get a player do not move it before you can receive a clock beat, ie wait one the clock and you input (to reject others)
-- When a player walks off board inform the clock so it can decrement its counter
-- when the injector adds players, inform the clock so it can increment its counter,
-- this could be done also by the cells
-- create a enum with commands in a seperate file

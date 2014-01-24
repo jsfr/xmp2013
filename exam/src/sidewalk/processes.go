@@ -11,8 +11,8 @@ import (
  * the injectors, the printer and the drunk.
  */
 func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
-	injs [](chan bool), printer chan bool, steps int, controller chan ClockRequest,
-	drunk chan bool) {
+	injClock [](chan bool), printerClock chan bool, steps int,
+	controller chan ClockRequest, drunkClock chan bool) {
 	agents := 0
 	wait := 500
 	<-controller
@@ -27,18 +27,21 @@ func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
 					switch cmd.Cmd {
 					case CmdResume:
 						paused = false
-					case CmdExit:
-						// TODO
 					case CmdTime:
 						wait = cmd.Arg[0]
 					default:
 						// Do nothing
 					}
 				}
-			case CmdExit:
-				// TODO
 			case CmdTime:
 				wait = cmd.Arg[0]
+			case CmdExit:
+				// Pause the clock until controller is closed after which, close
+				ok := true
+				for ok {
+					_, ok = <-controller
+				}
+				return
 			default:
 				// Do nothing
 			}
@@ -57,12 +60,12 @@ func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
 			}
 		}
 		agents -= agentRemove
-		drunk <- true
-		for _, inj := range injs {
+		drunkClock <- true
+		for _, inj := range injClock {
 			// tick every injector
 			inj <- true
 		}
-		for i := 0; i < len(injs); i++ {
+		for i := 0; i < len(injClock); i++ {
 			// as many times as there are injectors check input
 			agent := <-in
 			if agent.Ok {
@@ -70,8 +73,8 @@ func Clock(in chan Pedestrian, agentClock chan bool, agentDone chan bool,
 			}
 		}
 		// Now everone has moved and the printer can print
-		printer <- true
-		<-printer
+		printerClock <- true
+		<-printerClock
 		time.Sleep(time.Duration(wait) * time.Millisecond)
 	}
 }
@@ -86,7 +89,10 @@ func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction,
 	rsp := make(chan bool)
 	for {
 		select {
-		case i := <-ctrl:
+		case i, ok := <-ctrl:
+			if !ok {
+				return
+			}
 			step = i
 		case <-clock:
 			var agent Pedestrian
@@ -108,18 +114,23 @@ func Injector(clock chan bool, cell chan Msg, out chan Pedestrian, d Direction,
  * ANSI escape characters work in the terminal, as these are used to
  * overwrite the board every step.
  */
-func Printer(in chan Coordinate, drunk chan Coordinate, clock chan bool, x int, y int) {
+func Printer(in chan Coordinate, drunkPrinter chan Coordinate, clock chan bool,
+	x int, y int) {
 	coords := makeCoords(x, y)
 	drunkCoord := Coordinate{-1, -1}
 	step := 0
 	for {
 		select {
-		case c := <-in:
+		case c, ok := <-in:
+			if !ok {
+				return
+			}
 			coords[c.Y][c.X] = true // An agent is here in this turn
-		case c := <-drunk:
+		case c := <-drunkPrinter:
 			drunkCoord = c
 		case <-clock:
-			os.Stdout.WriteString("\033[s\033[0;0H\r\nStep: " + strconv.Itoa(step) + "\r\n")
+			os.Stdout.WriteString("\033[s\033[0;0H\r\nStep: " +
+				strconv.Itoa(step) + "\r\n")
 			hline := ""
 			for i := 0; i < x+2; i++ {
 				hline += "="
@@ -166,7 +177,10 @@ func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordina
 	for {
 		done := false
 		if !oldAgent {
-			msg := <-in
+			msg, ok := <-in
+			if !ok {
+				return
+			}
 			agent = msg.Agent
 			msg.Rsp <- true
 			printer <- coord
@@ -174,7 +188,10 @@ func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordina
 				// this cell is now permanently occupied by a drunk
 				isDrunk = true
 				for isDrunk {
-					msg := <-in
+					msg, ok := <-in
+					if !ok {
+						return
+					}
 					msg.Rsp <- false
 					if msg.Status == GotSober {
 						isDrunk = false
@@ -224,7 +241,10 @@ func Cell(in chan Msg, out [](chan Msg), printer chan Coordinate, coord Coordina
 					}
 					agentDone <- true
 				}
-			case msg := <-in:
+			case msg, ok := <-in:
+				if !ok {
+					return
+				}
 				msg.Rsp <- false
 			}
 		}
@@ -244,12 +264,16 @@ func Drunkard(in chan DrunkRequest, cells [][](chan Msg), ctrl chan Coordinate,
 		select {
 		case req := <-in:
 			req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
-		case coord := <-ctrl:
+		case coord, ok := <-ctrl:
+			if !ok {
+				return
+			}
 			if !validCoord(drunk, x, y) {
 				done := false
+				cellMsg := Msg{rsp, Pedestrian{Up, false}, GotDrunk}
 				for !done {
 					select {
-					case cells[coord.Y][coord.X] <- Msg{rsp, Pedestrian{Up, false}, GotDrunk}:
+					case cells[coord.Y][coord.X] <- cellMsg:
 						done = true
 					case req := <-in:
 						req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
@@ -271,19 +295,21 @@ func Drunkard(in chan DrunkRequest, cells [][](chan Msg), ctrl chan Coordinate,
 				randomCoord := randomDirc(drunk, x, y)
 				if validCoord(randomCoord, x, y) {
 					done := false
+					cellMsg := Msg{rsp, Pedestrian{Up, false}, GotDrunk}
 					for !done {
 						select {
-						case cells[randomCoord.Y][randomCoord.X] <- Msg{rsp, Pedestrian{Up, false}, GotDrunk}:
+						case cells[randomCoord.Y][randomCoord.X] <- cellMsg:
 							done = true
 						case req := <-in:
 							req.Rsp <- drunkNearby(drunk, req.ReqCoord, x, y)
 						}
 					}
 					if <-rsp {
+						cellMsg := Msg{rsp, Pedestrian{Up, false}, GotSober}
 						done = false
 						for !done {
 							select {
-							case cells[drunk.Y][drunk.X] <- Msg{rsp, Pedestrian{Up, false}, GotSober}:
+							case cells[drunk.Y][drunk.X] <- cellMsg:
 								<-rsp
 								done = true
 							case req := <-in:
@@ -294,7 +320,8 @@ func Drunkard(in chan DrunkRequest, cells [][](chan Msg), ctrl chan Coordinate,
 						printer <- randomCoord
 					}
 				} else {
-					cells[drunk.Y][drunk.X] <- Msg{rsp, Pedestrian{Up, false}, GotSober}
+					cellMsg := Msg{rsp, Pedestrian{Up, false}, GotSober}
+					cells[drunk.Y][drunk.X] <- cellMsg
 					<-rsp
 					drunk = Coordinate{-1, -1}
 					printer <- drunk
@@ -339,6 +366,7 @@ func Sidewalk(x int, y int, injs []Coordinate, ds []Direction, steps int) {
 	}
 	go Printer(printer, drunkPrinter, printerClock, x, y)
 	go Drunkard(drunkReq, cells, drunkCtrl, drunkPrinter, drunkClock, x, y)
-	go Clock(clockIn, agentClock, agentDone, injChs, printerClock, steps, clockCtrl, drunkClock)
-	Controller(clockCtrl, injCtrl, drunkCtrl, x, y)
+	go Clock(clockIn, agentClock, agentDone, injChs, printerClock,
+		steps, clockCtrl, drunkClock)
+	Controller(clockCtrl, injCtrl, drunkCtrl, printer, cells, x, y)
 }
